@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
         }
       },
       preview: {
-        allowedHosts: ['dermaticsai.onrender.com']
+        allowedHosts: ['derma-india.onrender.com']
       }
     };
 });
