@@ -103,7 +103,7 @@ const Step1PastProducts: React.FC<Step1Props> = ({ onNext, pastProducts, setPast
 
   return (
     <div className="animate-fade-in-up h-full flex flex-col w-full">
-        <div className="flex-grow">
+        <div className="flex-grow overflow-y-auto pr-2 -mr-4 sm:pr-4">
           <h2 className="text-xl sm:text-2xl font-extrabold text-brand-text-main mb-2">
               <span className="text-brand-primary">Step 1:</span> Past Product Usage
           </h2>
