@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { SkincareRoutine, FaceImage, SkinConditionCategory } from '../types';
 import Button from './common/Button';
@@ -114,8 +112,8 @@ const DoctorReport: React.FC<DoctorReportProps> = ({
         </Button>
       </div>
 
-      <div className="flex-grow overflow-y-auto bg-white rounded-2xl border-2 border-slate-200 p-4 sm:p-6 lg:p-8 shadow-inner-soft">
-        <div id="doctor-report-content" className="space-y-8">
+      <div className="flex-grow overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <div id="doctor-report-content" className="space-y-8 bg-white p-6 rounded-lg">
           <div className="text-center border-b pb-4">
             <h1 className="text-2xl font-bold text-slate-800">{routineTitle}</h1>
             <p className="text-slate-500">Personalized Skincare Plan</p>
