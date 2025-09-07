@@ -43,11 +43,11 @@ const StarIcon = ({ className, isHalf = false }: { className: string, isHalf?: b
 );
 
 const StarRating = ({ rating, reviews }: { rating: number, reviews: number }) => (
-    <div className="flex items-center mb-1">
+    <div className="flex items-center mb-0.5">
         {[...Array(5)].map((_, i) => (
-            <StarIcon key={i} className={`w-4 h-4 ${i < Math.floor(rating) ? 'text-amber-400' : 'text-slate-300'}`} />
+            <StarIcon key={i} className={`w-3 h-3 ${i < Math.floor(rating) ? 'text-amber-400' : 'text-slate-300'}`} />
         ))}
-        <span className="text-xs text-slate-500 ml-2">{reviews} reviews</span>
+        <span className="text-[9px] text-slate-500 ml-1.5">{reviews} reviews</span>
     </div>
 );
 
@@ -126,7 +126,6 @@ const Report: React.FC<ReportProps> = ({
 }) => {
   const [addedProducts, setAddedProducts] = useState<string[]>([]);
   const [allAdded, setAllAdded] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
   const { unifiedRoutineSteps, uniqueStepTypes } = useMemo(() => {
     if (!recommendation) return { unifiedRoutineSteps: [], uniqueStepTypes: [] };
@@ -162,10 +161,6 @@ const Report: React.FC<ReportProps> = ({
 
     return { unifiedRoutineSteps: allSteps, uniqueStepTypes: uniqueTypes };
   }, [recommendation]);
-
-  const handleToggleExpand = (key: string) => {
-    setExpandedGroups(prev => ({...prev, [key]: !prev[key]}));
-  };
 
   const handleAddToCartClick = (product: RoutineStep | AlternativeProduct) => {
     onAddToCart(product);
@@ -221,66 +216,48 @@ const Report: React.FC<ReportProps> = ({
     
     return (
       <div className="bg-white rounded-lg shadow-soft border border-slate-200/80 flex flex-col h-full transition-all duration-300 hover:shadow-lifted hover:-translate-y-0.5 relative">
-        <div className="absolute top-3 left-0 right-0 px-3 z-10 flex justify-between items-center">
+        <div className="absolute top-1.5 left-0 right-0 px-1.5 z-10 flex justify-between items-center">
             {isPrimary ? (
-                <div className="bg-brand-primary text-white text-[10px] leading-tight font-bold px-2 py-1 rounded-full shadow-lg">Recommended</div>
+                <div className="bg-brand-primary text-white text-[9px] leading-tight font-bold px-1.5 py-0.5 rounded-full shadow-lg">Recommended</div>
             ) : (
-                <div className="bg-orange-500 text-white text-[10px] leading-tight font-bold px-2 py-1 rounded-full shadow-lg">Alternative</div>
+                <div className="bg-orange-500 text-white text-[9px] leading-tight font-bold px-1.5 py-0.5 rounded-full shadow-lg">Alternative</div>
             )}
 
             {usage && (
-                 <div className="flex items-center gap-1 rounded-full bg-slate-800/80 p-1 text-xs font-bold text-white shadow-lg backdrop-blur-sm">
-                    {usage.includes('AM') && <span title="Morning"><SunIcon className="h-3 w-3 text-amber-300" /></span>}
-                    {usage.includes('PM') && <span title="Evening"><MoonIcon className="h-3 w-3 text-indigo-300" /></span>}
+                 <div className="flex items-center gap-1 rounded-full bg-slate-800/80 p-0.5 text-xs font-bold text-white shadow-lg backdrop-blur-sm">
+                    {usage.includes('AM') && <span title="Morning"><SunIcon className="h-2.5 w-2.5 text-amber-300" /></span>}
+                    {usage.includes('PM') && <span title="Evening"><MoonIcon className="h-2.5 w-2.5 text-indigo-300" /></span>}
                 </div>
             )}
         </div>
-
-        {isInfoExpanded && (product as RoutineStep).purpose && (
-             <div className="p-3 text-xs bg-blue-50 border-b border-blue-200 text-blue-800 rounded-t-xl animate-fade-in-up">
-                <h4 className="font-bold mb-1">Why we chose this:</h4>
-                <p>{(product as RoutineStep).purpose}</p>
-            </div>
-        )}
         
-        <div className="p-2 pt-8 bg-slate-50 aspect-[4/3] flex items-center justify-center relative">
+        <div className="p-2 pt-6 bg-slate-50 flex items-center justify-center relative h-24">
              <a href={product.productUrl} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
                 <img src={product.productImageUrl} alt={product.productName} className="w-full h-full object-contain" />
             </a>
         </div>
-        <div className="p-3 flex flex-col flex-grow">
+        <div className="p-2 flex flex-col flex-grow">
             <StarRating rating={4.5} reviews={Math.floor(Math.random() * 200) + 50} />
-             <div className="flex items-start gap-2 justify-between">
-                <h3 className="font-bold text-xs text-brand-text-main leading-tight flex-grow mb-1">
-                    <a href={product.productUrl} target="_blank" rel="noopener noreferrer" className="hover:text-brand-primary transition-colors">
-                        {product.productName}
-                    </a>
-                </h3>
-                {(product as RoutineStep).purpose && (
-                    <button 
-                        onClick={() => setIsInfoExpanded(prev => !prev)}
-                        className="text-slate-400 hover:text-brand-primary flex-shrink-0" 
-                        aria-label="Product information"
-                    >
-                        <InfoIcon />
-                    </button>
-                )}
-            </div>
+            <h3 className="font-bold text-[11px] text-brand-text-main leading-tight flex-grow mb-1">
+                <a href={product.productUrl} target="_blank" rel="noopener noreferrer" className="hover:text-brand-primary transition-colors line-clamp-2">
+                    {product.productName}
+                </a>
+            </h3>
             
             <div className="mt-auto">
                 <div className="mt-1">
-                    <span className="text-sm font-extrabold text-brand-text-main">{product.price}</span>
+                    <span className="text-xs font-extrabold text-brand-text-main">{product.price}</span>
                     {product.originalPrice && product.originalPrice !== product.price && (
-                        <span className="text-xs text-brand-text-muted line-through ml-1.5">{product.originalPrice}</span>
+                        <span className="text-[10px] text-brand-text-muted line-through ml-1">{product.originalPrice}</span>
                     )}
                 </div>
                  <Button 
                     onClick={() => handleAddToCartClick(product)}
                     variant={'ghost'}
                     size="sm"
-                    className={`w-full mt-2 gap-1.5 !font-bold text-xs ${isAdded ? '!bg-brand-primary !text-white !border-brand-primary' : '!bg-blue-50 !text-brand-primary border-2 border-blue-200 hover:!bg-blue-100 hover:!border-blue-300'}`}
+                    className={`w-full mt-1.5 gap-1 !font-bold !py-1 text-[10px] ${isAdded ? '!bg-brand-primary !text-white !border-brand-primary' : '!bg-blue-50 !text-brand-primary border-2 border-blue-200 hover:!bg-blue-100 hover:!border-blue-300'}`}
                 >
-                    {isAdded ? <CheckIcon className="w-4 h-4"/> : null}
+                    {isAdded ? <CheckIcon className="w-3 h-3"/> : null}
                     {isAdded ? 'ADDED' : 'ADD'}
                 </Button>
             </div>
@@ -290,16 +267,16 @@ const Report: React.FC<ReportProps> = ({
   };
 
   return (
-    <div className="animate-fade-in-up h-full flex flex-col w-full">
-      <div id="report-content-wrapper" className="flex-grow">
-          <div id="report-content" className="p-4 space-y-8">
+    <div className="animate-fade-in-up w-full">
+      <div id="report-content-wrapper">
+          <div id="report-content" className="p-1 space-y-3">
               <div className="text-center">
-                  <h1 className="text-xl font-extrabold text-slate-900">{routineTitle}</h1>
-                  <p className="text-brand-text-muted mt-1 text-sm">Your personalized skincare routine.</p>
+                  <h1 className="text-lg font-extrabold text-slate-900">{routineTitle}</h1>
+                  <p className="text-brand-text-muted mt-0.5 text-xs">Your personalized skincare routine.</p>
               </div>
 
-              <div className="py-4">
-                  <div className="space-y-8">
+              <div className="py-2">
+                  <div className="space-y-4">
                       {uniqueStepTypes.map((stepType) => {
                           const stepsForType = unifiedRoutineSteps.filter(s => s.stepType === stepType);
                           return (
@@ -324,10 +301,6 @@ const Report: React.FC<ReportProps> = ({
                                       return (
                                           <div key={`step-${stepType}-${index}`}>
                                               {sortedGroups.map(([ingredientGroup, products], groupIndex) => {
-                                                  const groupKey = `${stepType}-${groupIndex}`;
-                                                  const isExpanded = !!expandedGroups[groupKey];
-                                                  const showSeeAllButton = products.length > 2;
-                                                  
                                                   const sortedProducts = [...products].sort((a, b) => {
                                                       if (a.productId === step.productId) return -1;
                                                       if (b.productId === step.productId) return 1;
@@ -335,39 +308,17 @@ const Report: React.FC<ReportProps> = ({
                                                   });
 
                                                   return (
-                                                      <div key={ingredientGroup} className="mb-6 last:mb-0">
-                                                          <div className={`flex justify-between items-center pb-2 border-b-2 border-slate-200 ${groupIndex > 0 ? 'mt-6' : ''}`}>
-                                                              <h3 className="text-lg font-bold text-slate-700">
+                                                      <div key={ingredientGroup} className="mb-4 last:mb-0">
+                                                          <div className={`flex justify-between items-center pb-1 border-b-2 border-slate-200 ${groupIndex > 0 ? 'mt-4' : ''}`}>
+                                                              <h3 className="text-base font-bold text-slate-700">
                                                                   {groupIndex === 0 ? step.stepType : `${step.stepType} ${groupIndex + 1}`}
                                                               </h3>
-                                                              {showSeeAllButton && (
-                                                                  <button 
-                                                                      onClick={() => handleToggleExpand(groupKey)}
-                                                                      className="text-sm font-semibold text-brand-primary hover:text-brand-primary-hover flex items-center gap-1 lg:hidden"
-                                                                      aria-expanded={isExpanded}
-                                                                  >
-                                                                      {isExpanded ? 'See Less' : 'See All'}
-                                                                      <ArrowRightIcon className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`} />
-                                                                  </button>
-                                                              )}
                                                           </div>
-
-                                                          <div className={`
-                                                              mt-3
-                                                              lg:grid lg:grid-cols-5 lg:gap-3 lg:pb-0
-                                                              ${isExpanded ? 
-                                                                  'grid grid-cols-2 gap-2 sm:gap-3' : 
-                                                                  'flex overflow-x-auto gap-2 pb-3 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'
-                                                              }
-                                                          `}>
+                                                          <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
                                                               {sortedProducts.map(product => {
                                                                   const isPrimary = product.productId === step.productId;
                                                                   return (
-                                                                      <div key={product.productId} className={`
-                                                                          snap-start
-                                                                          lg:w-auto lg:flex-shrink
-                                                                          ${isExpanded ? 'w-full' : 'w-[48%] sm:w-[31%] flex-shrink-0'}
-                                                                      `}>
+                                                                      <div key={product.productId}>
                                                                           <ProductCard product={product} isPrimary={isPrimary} usage={step.usage} />
                                                                       </div>
                                                                   );
@@ -387,35 +338,23 @@ const Report: React.FC<ReportProps> = ({
           </div>
       </div>
       
-      <div className="flex-shrink-0 flex justify-center items-center flex-wrap gap-3 p-4 border-t border-slate-200">
-        <Button onClick={onBack} variant="secondary" size="sm" className="gap-2">
-            <ArrowLeftIcon className="w-4 h-4" />
-            Back to Goals
-        </Button>
-        <Button onClick={onReset} variant="secondary" size="sm" className="gap-2">
-          <RefreshCw className="w-4 h-4"/>
-          Start Over
+      <div className="flex-shrink-0 flex justify-center items-center flex-wrap gap-2 p-2 border-t border-slate-200">
+        <Button onClick={onBack} variant="secondary" size="sm" className="gap-1">
+            <ArrowLeftIcon className="w-3 h-3" />
+            Back
         </Button>
         <Button
           onClick={handleAddAllToCart}
           variant="primary"
           size="sm"
-          className="gap-2"
+          className="gap-1.5"
           disabled={allAdded}
         >
-          {allAdded ? (
-            <>
-              <CheckIcon className="w-5 h-5" /> All Added!
-            </>
-          ) : (
-            <>
-              <ShoppingCartIcon className="w-5 h-5" /> Add All to Cart
-            </>
-          )}
+          {allAdded ? <><CheckIcon className="w-4 h-4" /> All Added!</> : <><ShoppingCartIcon className="w-4 h-4" /> Add All</>}
         </Button>
-        <Button onClick={onNext} variant="primary" size="sm" className="gap-2">
-            Next: AI Doctor's Report
-            <ArrowRightIcon className="w-4 h-4" />
+        <Button onClick={onNext} variant="primary" size="sm" className="gap-1">
+            Next
+            <ArrowRightIcon className="w-3 h-3" />
         </Button>
       </div>
     </div>
