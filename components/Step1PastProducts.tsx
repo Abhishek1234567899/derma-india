@@ -102,18 +102,18 @@ const Step1PastProducts: React.FC<Step1Props> = ({ onNext, pastProducts, setPast
   }
 
   return (
-    <div className="animate-fade-in-up h-full flex flex-col w-full">
-        <div className="flex-shrink-0 pr-2 -mr-4 sm:pr-4">
-          <h2 className="text-xl sm:text-2xl font-extrabold text-brand-text-main mb-2">
+    <div className="animate-fade-in-up w-full">
+        <div>
+          <h2 className="text-lg font-bold text-brand-text-main mb-1">
               <span className="text-brand-primary">Step 1:</span> Past Product Usage
           </h2>
-          <p className="text-sm sm:text-base text-brand-text-muted mb-6">Tell us about products you've used. This helps us avoid recommending things that didn't work for you.</p>
+          <p className="text-xs text-brand-text-muted mb-4">Tell us about products you've used before.</p>
 
-          <div className="mb-4 flex flex-col gap-4">
+          <div className="mb-4 flex flex-col gap-3">
             <div>
               <Select
                 id="common-product-select"
-                label="Common Products (Select one or 'Other')"
+                label="Common Products"
                 value={selectedCommonProduct}
                 onChange={handleCommonProductSelect}
               >
@@ -131,7 +131,7 @@ const Step1PastProducts: React.FC<Step1Props> = ({ onNext, pastProducts, setPast
                       id="customProductName"
                       value={customProductName}
                       onChange={(e) => setCustomProductName(e.target.value)}
-                      className="block w-full bg-white text-brand-text-main placeholder-slate-400 border border-slate-300 rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-brand-primary-light focus:border-brand-primary-light transition-all text-base shadow-sm"
+                      className="block w-full bg-white text-brand-text-main placeholder-slate-400 border border-slate-300 rounded-lg py-2 px-3 focus:ring-2 focus:ring-brand-primary-light focus:border-brand-primary-light transition-all text-sm shadow-sm"
                       placeholder="Enter product name..."
                       autoFocus
                   />
@@ -139,34 +139,34 @@ const Step1PastProducts: React.FC<Step1Props> = ({ onNext, pastProducts, setPast
             )}
             
             {productNameToAdd && (
-              <div className="space-y-4 animate-fade-in-up">
-                <h3 className="text-base font-semibold text-brand-text-main">Set Details for "{productNameToAdd}"</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-3 animate-fade-in-up">
+                <h3 className="text-sm font-semibold text-brand-text-main">Details for "{productNameToAdd}"</h3>
+                <div className="grid grid-cols-2 gap-3">
                   <div>
-                      <label className="block text-sm font-medium text-brand-text-main mb-1.5">Are you currently using it?</label>
-                      <div className="relative w-full h-11 bg-slate-200 rounded-lg p-1 flex items-center border border-slate-300">
+                      <label className="block text-xs font-medium text-brand-text-main mb-1">Currently using?</label>
+                      <div className="relative w-full h-10 bg-slate-200 rounded-lg p-1 flex items-center border border-slate-300">
                         <div className={`absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-white rounded-md shadow-sm transition-transform duration-300 ease-in-out ${isUsing ? 'translate-x-0' : 'translate-x-full'}`}></div>
-                        <button type="button" onClick={() => setIsUsing(true)} className={`flex-1 text-center font-semibold z-10 transition-colors text-sm ${isUsing ? 'text-brand-primary' : 'text-slate-600'}`}>Yes</button>
-                        <button type="button" onClick={() => setIsUsing(false)} className={`flex-1 text-center font-semibold z-10 transition-colors text-sm ${!isUsing ? 'text-brand-primary' : 'text-slate-600'}`}>No</button>
+                        <button type="button" onClick={() => setIsUsing(true)} className={`flex-1 text-center font-semibold z-10 transition-colors text-xs ${isUsing ? 'text-brand-primary' : 'text-slate-600'}`}>Yes</button>
+                        <button type="button" onClick={() => setIsUsing(false)} className={`flex-1 text-center font-semibold z-10 transition-colors text-xs ${!isUsing ? 'text-brand-primary' : 'text-slate-600'}`}>No</button>
                       </div>
                     </div>
                     <Select
                       id="duration"
-                      label="How long have you used it?"
+                      label="Duration of use?"
                       value={duration}
                       onChange={(e) => setDuration(e.target.value)}
                       required
                     >
-                      <option value="" disabled>Select duration</option>
+                      <option value="" disabled>Select</option>
                       {COMMON_DURATIONS.map((d) => (
                         <option key={d} value={d}>{d}</option>
                       ))}
                     </Select>
                 </div>
                  <div>
-                    <label className="block text-sm font-medium text-brand-text-main mb-1.5">Add a Photo (Optional)</label>
-                    <div className="flex items-center gap-4">
-                        <div className="w-20 h-20 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 flex-shrink-0 relative group">
+                    <label className="block text-xs font-medium text-brand-text-main mb-1">Add Photo (Optional)</label>
+                    <div className="flex items-center gap-2">
+                        <div className="w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 flex-shrink-0 relative group">
                             {newProductImage ? (
                                 <>
                                     <img src={newProductImage} alt="New product preview" className="w-full h-full rounded-lg object-contain" />
@@ -175,18 +175,18 @@ const Step1PastProducts: React.FC<Step1Props> = ({ onNext, pastProducts, setPast
                                     </button>
                                 </>
                             ) : (
-                                <ImageIcon className="w-8 h-8 text-slate-400" />
+                                <ImageIcon className="w-6 h-6 text-slate-400" />
                             )}
                         </div>
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-1.5">
                             <label htmlFor="new-product-image-upload" className="cursor-pointer">
-                                <Button as="div" variant="secondary" size="sm" className="w-full gap-2 !justify-start !px-3">
-                                    <UploadCloud className="w-4 h-4" /> Upload File
+                                <Button as="div" variant="secondary" size="sm" className="w-full gap-1 !justify-start !px-2 !py-1 text-xs">
+                                    <UploadCloud className="w-3 h-3" /> Upload
                                 </Button>
                                 <input id="new-product-image-upload" type="file" className="sr-only" accept="image/*" onChange={handleNewProductImageUpload} />
                             </label>
-                            <Button onClick={() => setIsCameraForNewProductOpen(true)} variant="secondary" size="sm" className="w-full gap-2 !justify-start !px-3">
-                                <CameraIcon className="w-4 h-4" /> Use Camera
+                            <Button onClick={() => setIsCameraForNewProductOpen(true)} variant="secondary" size="sm" className="w-full gap-1 !justify-start !px-2 !py-1 text-xs">
+                                <CameraIcon className="w-3 h-3" /> Camera
                             </Button>
                         </div>
                     </div>
@@ -203,14 +203,14 @@ const Step1PastProducts: React.FC<Step1Props> = ({ onNext, pastProducts, setPast
           </div>
         </div>
         
-        <div className="flex-shrink pr-2 -mr-4 sm:pr-4">
+        <div>
           {pastProducts.length > 0 && (
-            <div className="mb-4">
-              <h3 className="text-base font-semibold text-brand-text-main mb-2">Your Products:</h3>
-              <ul className="space-y-2">
+            <div className="mb-2">
+              <h3 className="text-sm font-semibold text-brand-text-main mb-1">Your Products:</h3>
+              <ul className="space-y-1.5">
                 {pastProducts.map(p => (
-                  <li key={p.id} className="flex items-center gap-2 bg-white p-2 rounded-lg border border-slate-200 shadow-soft animate-fade-in-up">
-                      <div className="w-12 h-12 bg-slate-100 rounded-md flex items-center justify-center border border-slate-200 flex-shrink-0 relative group">
+                  <li key={p.id} className="flex items-center gap-2 bg-white p-1.5 rounded-lg border border-slate-200 shadow-soft animate-fade-in-up">
+                      <div className="w-10 h-10 bg-slate-100 rounded-md flex items-center justify-center border border-slate-200 flex-shrink-0 relative group">
                         {p.image ? (
                           <>
                             <img src={p.image} alt={p.name} className="w-full h-full rounded-lg object-contain" />
@@ -220,35 +220,35 @@ const Step1PastProducts: React.FC<Step1Props> = ({ onNext, pastProducts, setPast
                           </>
                         ) : (
                            <div className="flex flex-col items-center gap-0.5">
-                                <ImageIcon className="w-5 h-5 text-slate-400" />
-                                <span className="text-[10px] text-slate-500">No Image</span>
+                                <ImageIcon className="w-4 h-4 text-slate-400" />
+                                <span className="text-[9px] text-slate-500">No Image</span>
                            </div>
                         )}
                       </div>
                       
                       <div className="min-w-0 flex-1">
-                          <p className="font-semibold text-sm text-brand-text-main truncate">{p.name}</p>
-                          <p className={`text-xs font-medium ${p.isUsing ? 'text-green-600' : 'text-slate-500'}`}>{p.isUsing ? 'Currently using' : 'Used in past'} for {p.duration}</p>
+                          <p className="font-semibold text-xs text-brand-text-main truncate">{p.name}</p>
+                          <p className={`text-[10px] font-medium ${p.isUsing ? 'text-green-600' : 'text-slate-500'}`}>{p.isUsing ? 'Using' : 'Used'} for {p.duration}</p>
                       </div>
 
-                      <div className="flex flex-col sm:flex-row items-center gap-1.5 flex-shrink-0">
+                      <div className="flex items-center gap-1 flex-shrink-0">
                          <label htmlFor={`image-upload-${p.id}`} className="cursor-pointer" title="Upload Image">
-                            <Button as="div" variant="secondary" size="sm" className="!p-2 !rounded-md">
-                              <UploadCloud className="w-4 h-4" />
+                            <Button as="div" variant="secondary" size="sm" className="!p-1.5 !rounded-md">
+                              <UploadCloud className="w-3 h-3" />
                             </Button>
                             <input id={`image-upload-${p.id}`} type="file" className="sr-only" accept="image/*" onChange={(e) => handleImageUpload(e, p.id)} />
                           </label>
-                          <Button onClick={() => setCameraForProduct(p.id)} variant="secondary" size="sm" className="!p-2 !rounded-md" title="Take Photo">
-                            <CameraIcon className="w-4 h-4" />
+                          <Button onClick={() => setCameraForProduct(p.id)} variant="secondary" size="sm" className="!p-1.5 !rounded-md" title="Take Photo">
+                            <CameraIcon className="w-3 h-3" />
                           </Button>
                          <Button
                               onClick={() => handleRemoveProduct(p.id)}
                               variant="secondary"
                               size="sm"
-                              className="!p-2 !rounded-md !border-slate-300 !text-red-600 hover:!bg-red-50 hover:!border-red-400"
+                              className="!p-1.5 !rounded-md !border-slate-300 !text-red-600 hover:!bg-red-50 hover:!border-red-400"
                               title="Remove Product"
                           >
-                              <TrashIcon className="w-4 h-4" />
+                              <TrashIcon className="w-3 h-3" />
                           </Button>
                       </div>
                   </li>
@@ -258,7 +258,7 @@ const Step1PastProducts: React.FC<Step1Props> = ({ onNext, pastProducts, setPast
           )}
         </div>
 
-        <div className="flex-shrink-0 flex justify-between mt-auto pt-4 border-t border-slate-200">
+        <div className="flex justify-between mt-4 pt-2 border-t border-slate-200">
           <Button onClick={onNext} variant="secondary" size="sm">
             Skip
           </Button>
