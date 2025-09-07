@@ -1,4 +1,3 @@
-
 import React, { useCallback, useState, useEffect } from 'react';
 import { SkinConditionCategory, FaceImage } from '../types';
 import Button from './common/Button';
@@ -122,20 +121,22 @@ const Step2FaceAnalysis: React.FC<Step2Props> = ({
   
   return (
     <div className="animate-fade-in-up h-full flex flex-col w-full">
-        <div className="flex-grow overflow-y-auto pr-2 -mr-4 sm:pr-4">
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 mb-2">
-              <span className="text-brand-primary">Step 2:</span> AI Face Analysis
-          </h2>
-           <div className="rounded-lg bg-red-50 p-4 text-sm text-red-800 border border-red-200 mb-6 sm:mb-8 flex items-start gap-3" role="alert">
-              <TriangleAlertIcon className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-              <p className="leading-relaxed">
-                  For best results, upload clear, well-lit photos of your face — including front, left, and right views. Adding multiple images will help ensure more accurate results.
-              </p>
+        <div className="flex-grow flex flex-col min-h-0 pr-2 -mr-4 sm:pr-4">
+          <div className="flex-shrink-0">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 mb-2">
+                <span className="text-brand-primary">Step 2:</span> AI Face Analysis
+            </h2>
+             <div className="rounded-lg bg-red-50 p-4 text-sm text-red-800 border border-red-200 mb-6 sm:mb-8 flex items-start gap-3" role="alert">
+                <TriangleAlertIcon className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <p className="leading-relaxed">
+                    For best results, upload clear, well-lit photos of your face — including front, left, and right views. Adding multiple images will help ensure more accurate results.
+                </p>
+            </div>
           </div>
 
           {analysisResult ? (
             // POST-ANALYSIS VIEW: Side-by-side
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start flex-grow min-h-0">
               <div className="lg:col-span-1 flex flex-col gap-4">
                 <div className="flex items-start gap-4">
                    <div className="relative flex-grow aspect-video bg-slate-100 rounded-lg border border-slate-200 flex items-center justify-center overflow-hidden">
@@ -224,8 +225,8 @@ const Step2FaceAnalysis: React.FC<Step2Props> = ({
                     </div>
                 )}
               </div>
-              <div className="lg:col-span-3 flex flex-col justify-center min-h-[300px]">
-                <div className="animate-fade-in-up">
+              <div className="lg:col-span-3 flex flex-col h-full">
+                <div className="animate-fade-in-up flex-shrink-0">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3 text-lg sm:text-xl font-bold text-green-600">
                             <CheckCircle className="w-8 h-8 text-green-500" />
@@ -235,40 +236,40 @@ const Step2FaceAnalysis: React.FC<Step2Props> = ({
                            Re-analyze
                         </Button>
                     </div>
-                    <div className="max-h-[27rem] overflow-y-auto pr-2 -mr-2">
-                      {analysisResult.map((category) => {
-                          const style = getCategoryStyle(category.category);
-                          const Icon = style.icon;
-                          return (
-                              <div key={category.category} className="py-4 border-b border-slate-200 last:border-b-0">
-                                  <h4 className={`font-bold text-sm sm:text-base mb-3 flex items-center gap-2 ${style.tailwind.text}`}>
-                                      <Icon className={`w-5 h-5 ${style.tailwind.icon}`} />
-                                      {category.category}
-                                  </h4>
-                                  <ul className="space-y-1.5">
-                                  {category.conditions.map((condition) => (
-                                      <li key={condition.name} 
-                                          className={`flex justify-between items-center text-sm transition-all rounded-md p-2 -mx-2 cursor-pointer ${hoveredCondition === condition.name ? `bg-blue-50` : 'hover:bg-slate-50'}`}
-                                          onMouseEnter={() => setHoveredCondition(condition.name)}
-                                          onMouseLeave={() => setHoveredCondition(null)}>
-                                          <div className="flex-grow pr-2">
-                                              <span className="text-slate-700 font-semibold block">{condition.name}</span>
-                                              <span className="text-slate-500 text-xs">{condition.location}</span>
-                                          </div>
-                                          <span className={`font-semibold text-right text-sm flex-shrink-0 ${style.tailwind.text}`}>{condition.confidence}%</span>
-                                      </li>
-                                  ))}
-                                  </ul>
-                              </div>
-                          )
-                      })}
-                    </div>
+                </div>
+                <div className="flex-grow min-h-0 overflow-y-auto pr-2 -mr-2">
+                  {analysisResult.map((category) => {
+                      const style = getCategoryStyle(category.category);
+                      const Icon = style.icon;
+                      return (
+                          <div key={category.category} className="py-4 border-b border-slate-200 last:border-b-0">
+                              <h4 className={`font-bold text-sm sm:text-base mb-3 flex items-center gap-2 ${style.tailwind.text}`}>
+                                  <Icon className={`w-5 h-5 ${style.tailwind.icon}`} />
+                                  {category.category}
+                              </h4>
+                              <ul className="space-y-1.5">
+                              {category.conditions.map((condition) => (
+                                  <li key={condition.name} 
+                                      className={`flex justify-between items-center text-sm transition-all rounded-md p-2 -mx-2 cursor-pointer ${hoveredCondition === condition.name ? `bg-blue-50` : 'hover:bg-slate-50'}`}
+                                      onMouseEnter={() => setHoveredCondition(condition.name)}
+                                      onMouseLeave={() => setHoveredCondition(null)}>
+                                      <div className="flex-grow pr-2">
+                                          <span className="text-slate-700 font-semibold block">{condition.name}</span>
+                                          <span className="text-slate-500 text-xs">{condition.location}</span>
+                                      </div>
+                                      <span className={`font-semibold text-right text-sm flex-shrink-0 ${style.tailwind.text}`}>{condition.confidence}%</span>
+                                  </li>
+                              ))}
+                              </ul>
+                          </div>
+                      )
+                  })}
                 </div>
               </div>
             </div>
           ) : (
             // PRE-ANALYSIS VIEW: Stacked
-            <div className="flex flex-col items-center gap-6">
+            <div className="flex flex-col items-center justify-center gap-6 flex-grow">
               <div className="w-full max-w-lg flex flex-col gap-4">
                  <div className="flex items-start gap-4">
                    <div className="relative flex-grow aspect-video bg-slate-100 rounded-lg border border-slate-200 flex items-center justify-center overflow-hidden">
@@ -333,7 +334,7 @@ const Step2FaceAnalysis: React.FC<Step2Props> = ({
             </div>
           )}
         </div>
-        <div className="flex-shrink-0 flex justify-between mt-8 pt-6 border-t border-slate-200">
+        <div className="flex-shrink-0 flex justify-between mt-auto pt-6 border-t border-slate-200">
           <Button onClick={onBack} variant="secondary" size="sm">Back</Button>
           <Button onClick={onNext} disabled={!analysisResult} size="sm">Next: Set My Goals</Button>
         </div>
