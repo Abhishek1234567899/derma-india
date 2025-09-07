@@ -324,12 +324,12 @@ const Step2FaceAnalysis: React.FC<Step2Props> = ({
                 )}
               </div>
               <div className="w-full max-w-lg">
-                <Card className="text-center md:text-left">
+                <div className="text-center md:text-left bg-brand-surface rounded-2xl shadow-lifted border border-slate-200/60 p-6 sm:p-8">
                     <p className="text-sm sm:text-base text-slate-600 mb-6">Once you've uploaded your photos, we'll analyze them and highlight any areas of concern right on your images.</p>
                     <Button onClick={handleAnalyze} disabled={faceImages.length === 0 || isLoading} isLoading={isLoading} size="sm" className="w-full">
                         {isLoading ? 'Analyzing...' : 'Analyze My Skin'}
                     </Button>
-                </Card>
+                </div>
               </div>
             </div>
           )}
