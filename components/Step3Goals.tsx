@@ -192,7 +192,7 @@ const Step3Goals: React.FC<Step3Props> = ({
      <>
         {isLoading && <LoadingOverlay title="Crafting your personalized plan..." tips={LOADING_TIPS} />}
         <div className="animate-fade-in-up h-full flex flex-col w-full">
-            <div className="flex-grow">
+            <div className="flex-grow overflow-y-auto pr-2 -mr-4 sm:pr-4">
                 <div>
                     <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 mb-2">
                         <span className="text-brand-primary">Step 3:</span> Select Your Skincare Goals
