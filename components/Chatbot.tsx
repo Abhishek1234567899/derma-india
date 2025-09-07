@@ -145,7 +145,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ analysisResult, skincareGoals, recomm
 
   return (
     <div className="flex flex-col h-full w-full">
-      <div className="flex-grow overflow-y-auto p-4 bg-white rounded-lg border border-slate-200 shadow-inner-soft mb-4 flex flex-col space-y-4">
+      <div className="flex-grow overflow-y-auto p-4 mb-4 flex flex-col space-y-4">
         {chatHistory.map((message) => (
           <div key={message.id} className={`flex items-start gap-3 ${message.sender === 'user' ? 'justify-end' : 'animate-fade-in-up'}`}>
             {message.sender === 'ai' && <div className="p-1.5 bg-slate-200 rounded-full mt-1 flex-shrink-0"><BotMessageSquare className="w-5 h-5 text-blue-600" /></div>}
