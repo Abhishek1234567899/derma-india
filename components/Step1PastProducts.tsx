@@ -107,9 +107,9 @@ const Step1PastProducts: React.FC<Step1Props> = ({ onNext, pastProducts, setPast
           <h2 className="text-xl sm:text-2xl font-extrabold text-brand-text-main mb-2">
               <span className="text-brand-primary">Step 1:</span> Past Product Usage
           </h2>
-          <p className="text-sm sm:text-base text-brand-text-muted mb-6 sm:mb-8">Tell us about products you've used. This helps us avoid recommending things that didn't work for you.</p>
+          <p className="text-sm sm:text-base text-brand-text-muted mb-6">Tell us about products you've used. This helps us avoid recommending things that didn't work for you.</p>
 
-          <div className="mb-8 flex flex-col gap-6">
+          <div className="mb-4 flex flex-col gap-4">
             <div>
               <Select
                 id="common-product-select"
@@ -203,14 +203,14 @@ const Step1PastProducts: React.FC<Step1Props> = ({ onNext, pastProducts, setPast
           </div>
         </div>
         
-        <div className="flex-grow min-h-0 overflow-y-auto pr-2 -mr-4 sm:pr-4">
+        <div className="flex-shrink pr-2 -mr-4 sm:pr-4">
           {pastProducts.length > 0 && (
-            <div className="mb-6">
-              <h3 className="text-base sm:text-lg font-semibold text-brand-text-main mb-4">Your Products:</h3>
-              <ul className="space-y-3">
+            <div className="mb-4">
+              <h3 className="text-base font-semibold text-brand-text-main mb-2">Your Products:</h3>
+              <ul className="space-y-2">
                 {pastProducts.map(p => (
-                  <li key={p.id} className="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-soft animate-fade-in-up">
-                      <div className="w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 flex-shrink-0 relative group">
+                  <li key={p.id} className="flex items-center gap-2 bg-white p-2 rounded-lg border border-slate-200 shadow-soft animate-fade-in-up">
+                      <div className="w-12 h-12 bg-slate-100 rounded-md flex items-center justify-center border border-slate-200 flex-shrink-0 relative group">
                         {p.image ? (
                           <>
                             <img src={p.image} alt={p.name} className="w-full h-full rounded-lg object-contain" />
@@ -219,36 +219,36 @@ const Step1PastProducts: React.FC<Step1Props> = ({ onNext, pastProducts, setPast
                             </button>
                           </>
                         ) : (
-                           <div className="flex flex-col items-center gap-1">
-                                <ImageIcon className="w-6 h-6 text-slate-400" />
-                                <span className="text-xs text-slate-500">No Image</span>
+                           <div className="flex flex-col items-center gap-0.5">
+                                <ImageIcon className="w-5 h-5 text-slate-400" />
+                                <span className="text-[10px] text-slate-500">No Image</span>
                            </div>
                         )}
                       </div>
                       
                       <div className="min-w-0 flex-1">
-                          <p className="font-bold text-sm sm:text-base text-brand-text-main truncate">{p.name}</p>
-                          <p className={`text-xs sm:text-sm font-medium ${p.isUsing ? 'text-green-600' : 'text-slate-500'}`}>{p.isUsing ? 'Currently using' : 'Used in past'} for {p.duration}</p>
+                          <p className="font-semibold text-sm text-brand-text-main truncate">{p.name}</p>
+                          <p className={`text-xs font-medium ${p.isUsing ? 'text-green-600' : 'text-slate-500'}`}>{p.isUsing ? 'Currently using' : 'Used in past'} for {p.duration}</p>
                       </div>
 
-                      <div className="flex flex-col sm:flex-row items-center gap-2 flex-shrink-0">
+                      <div className="flex flex-col sm:flex-row items-center gap-1.5 flex-shrink-0">
                          <label htmlFor={`image-upload-${p.id}`} className="cursor-pointer" title="Upload Image">
-                            <Button as="div" variant="secondary" size="sm" className="!p-2.5 !rounded-lg">
-                              <UploadCloud className="w-5 h-5" />
+                            <Button as="div" variant="secondary" size="sm" className="!p-2 !rounded-md">
+                              <UploadCloud className="w-4 h-4" />
                             </Button>
                             <input id={`image-upload-${p.id}`} type="file" className="sr-only" accept="image/*" onChange={(e) => handleImageUpload(e, p.id)} />
                           </label>
-                          <Button onClick={() => setCameraForProduct(p.id)} variant="secondary" size="sm" className="!p-2.5 !rounded-lg" title="Take Photo">
-                            <CameraIcon className="w-5 h-5" />
+                          <Button onClick={() => setCameraForProduct(p.id)} variant="secondary" size="sm" className="!p-2 !rounded-md" title="Take Photo">
+                            <CameraIcon className="w-4 h-4" />
                           </Button>
                          <Button
                               onClick={() => handleRemoveProduct(p.id)}
                               variant="secondary"
                               size="sm"
-                              className="!p-2.5 !rounded-lg !border-slate-300 !text-red-600 hover:!bg-red-50 hover:!border-red-400"
+                              className="!p-2 !rounded-md !border-slate-300 !text-red-600 hover:!bg-red-50 hover:!border-red-400"
                               title="Remove Product"
                           >
-                              <TrashIcon className="w-5 h-5" />
+                              <TrashIcon className="w-4 h-4" />
                           </Button>
                       </div>
                   </li>
@@ -258,7 +258,7 @@ const Step1PastProducts: React.FC<Step1Props> = ({ onNext, pastProducts, setPast
           )}
         </div>
 
-        <div className="flex-shrink-0 flex justify-between mt-auto pt-6 border-t border-slate-200">
+        <div className="flex-shrink-0 flex justify-between mt-auto pt-4 border-t border-slate-200">
           <Button onClick={onNext} variant="secondary" size="sm">
             Skip
           </Button>
