@@ -291,7 +291,7 @@ const Report: React.FC<ReportProps> = ({
 
   return (
     <div className="animate-fade-in-up h-full flex flex-col w-full">
-      <div id="report-content-wrapper" className="flex-grow overflow-y-auto bg-slate-50/80 rounded-2xl">
+      <div id="report-content-wrapper" className="flex-grow overflow-y-auto">
           <div id="report-content" className="p-4 sm:p-6 lg:p-8 space-y-12">
               <div className="text-center">
                   <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">{routineTitle}</h1>
@@ -387,7 +387,7 @@ const Report: React.FC<ReportProps> = ({
           </div>
       </div>
       
-      <div className="flex-shrink-0 flex justify-center items-center flex-wrap gap-4 p-6 border-t border-slate-200 bg-white rounded-b-2xl">
+      <div className="flex-shrink-0 flex justify-center items-center flex-wrap gap-4 p-6 border-t border-slate-200">
         <Button onClick={onBack} variant="secondary" size="sm" className="gap-2">
             <ArrowLeftIcon className="w-4 h-4" />
             Back to Goals
