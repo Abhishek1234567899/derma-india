@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { PastProduct, SkinConditionCategory, SkincareRoutine, ChatMessage, FaceImage, CartItem, RoutineStep, AlternativeProduct } from './types';
 import Step1PastProducts from './components/Step1PastProducts';
@@ -197,7 +196,7 @@ const App: React.FC = () => {
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />
-      <div className="w-full h-screen flex flex-col">
+      <div className="w-full h-screen flex flex-col pt-20 lg:pt-0">
         <Header 
             onReset={resetState} 
             onCartClick={() => setIsCartOpen(true)} 
