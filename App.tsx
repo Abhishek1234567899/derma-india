@@ -181,7 +181,7 @@ const App: React.FC = () => {
 
   return (
     <div className="w-full h-screen overflow-hidden lg:grid lg:grid-cols-[350px,1fr] bg-brand-bg">
-       {isSidebarOpen && (
+      {isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-black/60 z-40 lg:hidden" 
           onClick={() => setIsSidebarOpen(false)}
@@ -197,19 +197,26 @@ const App: React.FC = () => {
         onClose={() => setIsSidebarOpen(false)}
       />
       <div className="w-full h-screen flex flex-col">
-        <Header 
+        {/* Header is sticky/fixed at top */}
+        <div className="sticky top-0 z-50">
+          <Header 
             onReset={resetState} 
             onCartClick={() => setIsCartOpen(true)} 
             cartItemCount={totalCartItems} 
             onMenuClick={() => setIsSidebarOpen(true)}
-        />
-        <main className="w-full flex-grow pt-24 pb-6 px-6 sm:pt-24 sm:pb-8 sm:px-8 lg:p-8">
-            <div className="w-full transition-all duration-300">
-                {renderStep()}
-            </div>
+          />
+        </div>
+        {/* Main content area: only step 2 has scroll, rest are fixed */}
+        <main
+          className={`flex-grow pt-24 pb-6 px-6 sm:pt-24 sm:pb-8 sm:px-8 lg:p-8 ${step === 2 ? "overflow-y-auto" : "overflow-hidden"}`}
+          style={{ minHeight: 0 }} // helps with flex scroll
+        >
+          <div className="w-full transition-all duration-300">
+            {renderStep()}
+          </div>
         </main>
       </div>
-       <CartDrawer
+      <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cartItems={cart}
