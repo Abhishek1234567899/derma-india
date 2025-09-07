@@ -103,7 +103,7 @@ const Step1PastProducts: React.FC<Step1Props> = ({ onNext, pastProducts, setPast
 
   return (
     <div className="animate-fade-in-up h-full flex flex-col w-full">
-        <div className="flex-grow overflow-y-auto pr-2 -mr-4 sm:pr-4">
+        <div className="flex-shrink-0 pr-2 -mr-4 sm:pr-4">
           <h2 className="text-xl sm:text-2xl font-extrabold text-brand-text-main mb-2">
               <span className="text-brand-primary">Step 1:</span> Past Product Usage
           </h2>
@@ -201,7 +201,9 @@ const Step1PastProducts: React.FC<Step1Props> = ({ onNext, pastProducts, setPast
                 </Button>
             </div>
           </div>
-          
+        </div>
+        
+        <div className="flex-grow min-h-0 overflow-y-auto pr-2 -mr-4 sm:pr-4">
           {pastProducts.length > 0 && (
             <div className="mb-6">
               <h3 className="text-base sm:text-lg font-semibold text-brand-text-main mb-4">Your Products:</h3>
@@ -256,7 +258,7 @@ const Step1PastProducts: React.FC<Step1Props> = ({ onNext, pastProducts, setPast
           )}
         </div>
 
-        <div className="flex-shrink-0 flex justify-between mt-8 pt-6 border-t border-slate-200">
+        <div className="flex-shrink-0 flex justify-between mt-auto pt-6 border-t border-slate-200">
           <Button onClick={onNext} variant="secondary" size="sm">
             Skip
           </Button>
