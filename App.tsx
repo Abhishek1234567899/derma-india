@@ -179,6 +179,12 @@ const App: React.FC = () => {
 
   const totalCartItems = cart.reduce((total, item) => total + item.quantity, 0);
 
+  // SCROLL LOGIC: Step 2, 3, 4 me scroll chahiye, baaki me nahi
+  const scrollSteps = [2, 3, 4];
+  const mainScrollClass = scrollSteps.includes(step)
+    ? "overflow-y-auto"
+    : "overflow-hidden";
+
   return (
     <div className="w-full h-screen overflow-hidden lg:grid lg:grid-cols-[350px,1fr] bg-brand-bg">
       {isSidebarOpen && (
@@ -197,7 +203,7 @@ const App: React.FC = () => {
         onClose={() => setIsSidebarOpen(false)}
       />
       <div className="w-full h-screen flex flex-col">
-        {/* Header is sticky/fixed at top */}
+        {/* Header sticky at top */}
         <div className="sticky top-0 z-50">
           <Header 
             onReset={resetState} 
@@ -206,10 +212,10 @@ const App: React.FC = () => {
             onMenuClick={() => setIsSidebarOpen(true)}
           />
         </div>
-        {/* Main content area: only step 2 has scroll, rest are fixed */}
+        {/* Main content: scroll only for steps 2, 3, 4 */}
         <main
-          className={`flex-grow pt-24 pb-6 px-6 sm:pt-24 sm:pb-8 sm:px-8 lg:p-8 ${step === 2 ? "overflow-y-auto" : "overflow-hidden"}`}
-          style={{ minHeight: 0 }} // helps with flex scroll
+          className={`flex-grow pt-24 pb-6 px-6 sm:pt-24 sm:pb-8 sm:px-8 lg:p-8 ${mainScrollClass}`}
+          style={{ minHeight: 0 }}
         >
           <div className="w-full transition-all duration-300">
             {renderStep()}
