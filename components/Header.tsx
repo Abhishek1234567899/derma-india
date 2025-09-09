@@ -11,7 +11,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onReset, onCartClick, cartItemCount, onMenuClick }) => {
   return (
-    <header className="w-full mx-auto p-4 flex items-center justify-between lg:hidden fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md z-20 border-b border-slate-200">
+    <header className="w-full mx-auto p-4 flex items-center justify-between lg:hidden shrink-0 bg-white/90 backdrop-blur-md z-20 border-b border-slate-200">
       <div className="flex items-center gap-2">
         <button onClick={onMenuClick} className="p-2 -ml-2 rounded-full hover:bg-black/10 transition-colors" aria-label="Open menu">
           <MenuIcon className="w-6 h-6 text-brand-text-muted" />
