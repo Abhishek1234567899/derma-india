@@ -1,5 +1,4 @@
 
-
 import React, { useState, useCallback } from 'react';
 import { PastProduct, SkinConditionCategory, SkincareRoutine, ChatMessage, FaceImage, CartItem, RoutineStep, AlternativeProduct } from './types';
 import Step1PastProducts from './components/Step1PastProducts';
@@ -210,7 +209,7 @@ const App: React.FC = () => {
                 {step === 4 ? (
                   renderStep()
                 ) : (
-                  <div className="bg-brand-surface rounded-2xl shadow-lifted p-6 sm:p-8 h-full flex flex-col border-t-4 border-brand-primary">
+                  <div className="bg-brand-surface rounded-2xl shadow-lifted p-6 sm:p-8 h-full flex flex-col border-t-4 border-brand-primary overflow-y-hidden">
                     {renderStep()}
                   </div>
                 )}
