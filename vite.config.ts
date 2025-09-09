@@ -12,6 +12,9 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
+      },
+      preview: {
+        allowedHosts: ['derma-india-vgq8.onrender.com']
       }
     };
 });
