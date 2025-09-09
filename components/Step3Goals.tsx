@@ -191,15 +191,15 @@ const Step3Goals: React.FC<Step3Props> = ({
   return (
      <>
         {isLoading && <LoadingOverlay title="Crafting your personalized plan..." tips={LOADING_TIPS} />}
-        <div className="animate-fade-in-up w-full">
-            <div>
+        <div className="animate-fade-in-up h-full flex flex-col w-full">
+            <div className="flex-grow overflow-y-auto pr-2 -mr-2">
                 <div>
-                    <h2 className="text-lg font-bold text-slate-900 mb-1">
+                    <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 mb-2">
                         <span className="text-brand-primary">Step 3:</span> Select Your Skincare Goals
                     </h2>
-                    <p className="text-xs text-slate-600 mb-4">Choose your focus. We've suggested some based on your analysis.</p>
+                    <p className="text-sm sm:text-base text-slate-600 mb-6 sm:mb-8">Choose what you'd like to focus on. We've highlighted some suggestions based on your skin analysis.</p>
 
-                    <div className="grid grid-cols-4 gap-1.5">
+                    <div className="grid grid-cols-4 gap-2 sm:gap-3">
                     {SKINCARE_GOALS.map(goal => {
                         const isSelected = skincareGoals.includes(goal.id);
                         const isSuggested = suggestedGoals.has(goal.id);
@@ -209,25 +209,25 @@ const Step3Goals: React.FC<Step3Props> = ({
                         <div
                             key={goal.id}
                             onClick={() => handleGoalToggle(goal.id)}
-                            className={`p-1.5 rounded-lg border-2 cursor-pointer transition-all duration-200 relative flex flex-col items-center justify-center text-center h-16 group hover:scale-105 hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/10 ${
+                            className={`p-2 rounded-xl border-2 cursor-pointer transition-all duration-200 relative flex flex-col items-center justify-center text-center h-20 group hover:scale-105 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/10 ${
                             isSelected 
-                                ? 'border-blue-500 bg-blue-50/80 shadow-md shadow-blue-500/20' 
+                                ? 'border-blue-500 bg-blue-50/80 shadow-lg shadow-blue-500/20' 
                                 : `${style.tailwind.border} bg-white/50`
                             }`}
                         >
-                            <Icon className={`w-5 h-5 mb-0.5 transition-colors duration-200 ${isSelected 
+                            <Icon className={`w-6 h-6 mb-0.5 transition-colors duration-200 ${isSelected 
                                 ? 'text-blue-500' 
                                 : `${style.tailwind.icon} group-hover:text-blue-500`
                             }`} />
-                            <h4 className={`text-[10px] leading-tight font-bold transition-colors duration-200 ${isSelected ? 'text-slate-800' : 'text-slate-600 group-hover:text-slate-800'}`}>{goal.label}</h4>
+                            <h4 className={`text-[11px] leading-tight sm:text-xs font-bold transition-colors duration-200 ${isSelected ? 'text-slate-800' : 'text-slate-600 group-hover:text-slate-800'}`}>{goal.label}</h4>
                             {isSuggested && !isSelected && (
-                                <div className="absolute top-1 right-1 p-0.5 bg-amber-300 rounded-full shadow-sm" title="Suggested based on your analysis">
-                                    <SparklesIcon className="w-2.5 h-2.5 text-amber-800" />
+                                <div className="absolute top-1.5 right-1.5 p-1 bg-amber-300 rounded-full shadow-sm group-hover:bg-amber-400 transition-colors" title="Suggested based on your analysis">
+                                    <SparklesIcon className="w-4 h-4 text-amber-800" />
                                 </div>
                             )}
                             {isSelected && (
-                            <div className="absolute top-1 right-1 h-4 w-4 bg-blue-600 rounded-full flex items-center justify-center shadow-sm">
-                                <CheckIcon className="h-2.5 w-2.5 text-white" strokeWidth={3}/>
+                            <div className="absolute top-1.5 right-1.5 h-5 w-5 bg-blue-600 rounded-full flex items-center justify-center shadow-sm">
+                                <CheckIcon className="h-3.5 w-3.5 text-white" strokeWidth={3}/>
                             </div>
                             )}
                         </div>
@@ -235,8 +235,8 @@ const Step3Goals: React.FC<Step3Props> = ({
                     })}
                     </div>
                     {skincareGoals.includes('other') && (
-                        <div className="mt-4 animate-fade-in-up">
-                            <label htmlFor="custom-goal-input" className="block text-sm font-semibold text-brand-text-main mb-1.5">
+                        <div className="mt-6 animate-fade-in-up">
+                            <label htmlFor="custom-goal-input" className="block text-sm sm:text-base font-semibold text-brand-text-main mb-2">
                                 Please specify your goal:
                             </label>
                             <input
@@ -244,7 +244,7 @@ const Step3Goals: React.FC<Step3Props> = ({
                                 type="text"
                                 value={customGoal}
                                 onChange={(e) => setCustomGoal(e.target.value)}
-                                className="block w-full bg-white text-brand-text-main placeholder-slate-400 border border-slate-300 rounded-lg py-2 px-3 focus:ring-2 focus:ring-brand-primary-light focus:border-brand-primary-light transition-all text-sm shadow-sm"
+                                className="block w-full bg-white text-brand-text-main placeholder-slate-400 border border-slate-300 rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-brand-primary-light focus:border-brand-primary-light transition-all text-base shadow-sm"
                                 placeholder="e.g., Reduce under-eye puffiness"
                                 autoFocus
                             />
@@ -253,7 +253,7 @@ const Step3Goals: React.FC<Step3Props> = ({
                 </div>
             </div>
 
-            <div className="flex justify-between mt-6 pt-3 border-t border-slate-200">
+            <div className="flex-shrink-0 flex justify-between mt-8 pt-6 border-t border-slate-200">
                 <Button onClick={onBack} variant="secondary" size="sm" disabled={isLoading}>Back</Button>
                 <Button onClick={handleGenerateRoutine} disabled={isGenerateDisabled} size="sm">
                 {isLoading ? 'Generating...' : 'Generate My Plan'}

@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { PastProduct, SkinConditionCategory, SkincareRoutine, ChatMessage, FaceImage, CartItem, RoutineStep, AlternativeProduct } from './types';
 import Step1PastProducts from './components/Step1PastProducts';
@@ -179,15 +180,9 @@ const App: React.FC = () => {
 
   const totalCartItems = cart.reduce((total, item) => total + item.quantity, 0);
 
-  // SCROLL LOGIC: Step 2, 3, 4 me scroll chahiye, baaki me nahi
-  const scrollSteps = [2, 3, 4];
-  const mainScrollClass = scrollSteps.includes(step)
-    ? "overflow-y-auto"
-    : "overflow-hidden";
-
   return (
     <div className="w-full h-screen overflow-hidden lg:grid lg:grid-cols-[350px,1fr] bg-brand-bg">
-      {isSidebarOpen && (
+       {isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-black/60 z-40 lg:hidden" 
           onClick={() => setIsSidebarOpen(false)}
@@ -202,27 +197,26 @@ const App: React.FC = () => {
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />
-      <div className="w-full h-screen flex flex-col">
-        {/* Header sticky at top */}
-        <div className="sticky top-0 z-50">
-          <Header 
+      <div className="w-full h-screen flex flex-col pt-20 lg:pt-0">
+        <Header 
             onReset={resetState} 
             onCartClick={() => setIsCartOpen(true)} 
             cartItemCount={totalCartItems} 
             onMenuClick={() => setIsSidebarOpen(true)}
-          />
-        </div>
-        {/* Main content: scroll only for steps 2, 3, 4 */}
-        <main
-          className={`flex-grow pt-24 pb-6 px-6 sm:pt-24 sm:pb-8 sm:px-8 lg:p-8 ${mainScrollClass}`}
-          style={{ minHeight: 0 }}
-        >
-          <div className="w-full transition-all duration-300">
-            {renderStep()}
-          </div>
+        />
+        <main className={`w-full flex-grow overflow-y-auto flex items-start justify-center px-2 sm:px-3 md:px-4 pt-16 sm:pt-20 md:pt-24 ${step === 2 ? 'pb-4 sm:pb-6' : 'pb-8 sm:pb-12'}`}>
+            <div className="w-full h-full transition-all duration-300">
+                {step === 4 ? (
+                  renderStep()
+                ) : (
+                  <div className="bg-brand-surface rounded-2xl shadow-lifted p-6 sm:p-8 h-full flex flex-col border-t-4 border-brand-primary">
+                    {renderStep()}
+                  </div>
+                )}
+            </div>
         </main>
       </div>
-      <CartDrawer
+       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cartItems={cart}

@@ -4,17 +4,17 @@ import { GoogleGenAI, GenerateContentResponse, Type, GenerateContentParameters }
 import { PastProduct, SkinConditionCategory, SkincareRoutine } from '../types';
 import { DERMATICS_INDIA_PRODUCTS } from "../productData";
 
-if (!process.env.GEMINI_API_KEY) {
-    throw new Error("GEMINI_API_KEY environment variable is not set.");
+if (!process.env.API_KEY) {
+    throw new Error("API_KEY environment variable is not set.");
 }
 
-// Split the GEMINI_API_KEY environment variable by commas to support multiple keys
-const apiKeys = process.env.GEMINI_API_KEY.split(',')
+// Split the API_KEY environment variable by commas to support multiple keys
+const apiKeys = process.env.API_KEY.split(',')
     .map(key => key.trim())
     .filter(key => key);
 
 if (apiKeys.length === 0) {
-    throw new Error("GEMINI_API_KEY environment variable is set, but contains no valid keys.");
+    throw new Error("API_KEY environment variable is set, but contains no valid keys.");
 }
 
 // Create an array of GoogleGenAI instances for failover
@@ -79,20 +79,20 @@ export const analyzeImage = async (images: File[]): Promise<SkinConditionCategor
     try {
         const imageParts = await Promise.all(images.map(fileToGenerativePart));
         const textPart = {
-            text: `Analyze these facial images in detail. They may show different angles of the same person's face (e.g., front, left side, right side). Provide one single, consolidated analysis based on all images provided. Identify all potential skin conditions. Group them into relevant categories like 'Acne & Breakouts', 'Oil Control & Sebum', 'Skin Texture & Surface', 'Pigmentation', 'Hydration Levels', 'Signs of Aging', 'Redness & Sensitivity'. 
-            
-            For each specific condition you identify, provide:
-            1. A 'name' for the condition (e.g., 'Pustules').
-            2. A 'confidence' score from 0 to 100 on how certain you are.
-            3. A 'location' string describing the primary area on the face (e.g., "Forehead", "Cheeks", "Nose", "Chin", "Around Mouth", "General Face").
-            4. An array of 'boundingBoxes' showing where you found the condition. Each bounding box object must have an 'imageId' (the 0-based index of the input image it corresponds to) and a 'box' object with normalized coordinates (x1, y1, x2, y2) from 0.0 to 1.0. If a condition is general and not localized, use a location like "General Face" and return an empty array for boundingBoxes.
+             text: `Analyze these facial images in detail. They may show different angles of the same person's face (e.g., front, left side, right side). Provide one single, consolidated analysis based on all images provided. Identify all potential skin conditions. Group them into relevant categories like 'Acne & Breakouts', 'Oil Control & Sebum', 'Skin Texture & Surface', 'Pigmentation', 'Hydration Levels', 'Signs of Aging', 'Redness & Sensitivity'. 
+             
+             For each specific condition you identify, provide:
+             1. A 'name' for the condition (e.g., 'Pustules').
+             2. A 'confidence' score from 0 to 100 on how certain you are.
+             3. A 'location' string describing the primary area on the face (e.g., "Forehead", "Cheeks", "Nose", "Chin", "Around Mouth", "General Face").
+             4. An array of 'boundingBoxes' showing where you found the condition. Each bounding box object must have an 'imageId' (the 0-based index of the input image it corresponds to) and a 'box' object with normalized coordinates (x1, y1, x2, y2) from 0.0 to 1.0. If a condition is general and not localized, use a location like "General Face" and return an empty array for boundingBoxes.
 
-            Provide the output strictly in JSON format according to the provided schema. Be thorough and identify as many relevant conditions as possible.
+             Provide the output strictly in JSON format according to the provided schema. Be thorough and identify as many relevant conditions as possible.
 
-            **CRITICAL INSTRUCTION FOR BALANCED ANALYSIS:** Strive to provide a balanced and accurate analysis. It's important to report on the healthy aspects of the skin to give the user a complete picture. If you identify clear, healthy areas, include a 'Healthy Skin' category with specific condition names like 'Clear and Balanced Skin on Forehead' or 'Good Hydration on Cheeks'. However, do not include the 'Healthy Skin' category if the facial images show widespread or severe conditions with no discernible healthy areas. Accuracy is the top priority.
-            
-            **CRITICAL INSTRUCTION FOR REDNESS:** Be very specific when identifying 'Redness & Sensitivity'. Do not classify a red spot as 'Redness' if that redness is a clear characteristic of another primary condition. For example, an inflamed acne pustule is naturally red; in this case, only identify it as 'Acne' and do not create a separate 'Redness' condition for the same spot. Only use the 'Redness & Sensitivity' category for conditions like rosacea, widespread irritation, flushing, or persistent patches of redness that are not directly and obviously part of another condition like a pimple.
-            `
+             **CRITICAL INSTRUCTION FOR BALANCED ANALYSIS:** Strive to provide a balanced and accurate analysis. It's important to report on the healthy aspects of the skin to give the user a complete picture. If you identify clear, healthy areas, include a 'Healthy Skin' category with specific condition names like 'Clear and Balanced Skin on Forehead' or 'Good Hydration on Cheeks'. However, do not include the 'Healthy Skin' category if the facial images show widespread or severe conditions with no discernible healthy areas. Accuracy is the top priority.
+             
+             **CRITICAL INSTRUCTION FOR REDNESS:** Be very specific when identifying 'Redness & Sensitivity'. Do not classify a red spot as 'Redness' if that redness is a clear characteristic of another primary condition. For example, an inflamed acne pustule is naturally red; in this case, only identify it as 'Acne' and do not create a separate 'Redness' condition for the same spot. Only use the 'Redness & Sensitivity' category for conditions like rosacea, widespread irritation, flushing, or persistent patches of redness that are not directly and obviously part of another condition like a pimple.
+             `
         };
 
         const response: GenerateContentResponse = await generateContentWithFailover({
@@ -145,22 +145,13 @@ export const analyzeImage = async (images: File[]): Promise<SkinConditionCategor
                 }
             }
         });
-
+        
         const jsonText = response.text.trim();
-        try {
-            return JSON.parse(jsonText);
-        } catch (jsonError) {
-            console.error("Failed to parse JSON response:", jsonText, jsonError);
-            throw new Error("Image analysis response was not valid JSON.");
-        }
+        return JSON.parse(jsonText);
 
     } catch (error) {
         console.error("Error analyzing image:", error);
-        if (error instanceof Error) {
-            throw new Error(`Failed to analyze skin image: ${error.message}`);
-        } else {
-            throw new Error("Failed to analyze skin image. Please try again.");
-        }
+        throw new Error("Failed to analyze skin image. Please try again.");
     }
 };
 

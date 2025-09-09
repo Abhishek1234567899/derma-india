@@ -99,12 +99,12 @@ const DoctorReport: React.FC<DoctorReportProps> = ({
 
   return (
     <div className="animate-fade-in-up h-full flex flex-col w-full">
-      <div className="flex items-center justify-between mb-3 flex-shrink-0">
+      <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <div>
-          <h2 className="text-xl font-extrabold text-slate-900">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
             <span className="text-brand-primary">Step 5:</span> AI Doctor's Report
           </h2>
-          <p className="text-sm text-slate-600">Here is a summary of your analysis and personalized plan.</p>
+          <p className="text-sm sm:text-base text-slate-600">Here is a summary of your analysis and personalized plan.</p>
         </div>
         <Button onClick={handleDownload} isLoading={isDownloading} variant="secondary" size="sm" className="gap-2">
           <Download className="w-4 h-4"/>
@@ -112,27 +112,27 @@ const DoctorReport: React.FC<DoctorReportProps> = ({
         </Button>
       </div>
 
-      <div className="flex-grow">
-        <div id="doctor-report-content" className="space-y-4 bg-white p-4 rounded-lg">
-          <div className="text-center border-b pb-2">
-            <h1 className="text-xl font-bold text-slate-800">{routineTitle}</h1>
-            <p className="text-slate-500 text-sm">Personalized Skincare Plan</p>
-            <p className="text-xs text-slate-400 mt-0.5">Generated on: {new Date().toLocaleDateString()}</p>
+      <div className="flex-grow overflow-y-auto bg-white rounded-2xl border-2 border-slate-200 p-4 sm:p-6 lg:p-8 shadow-inner-soft">
+        <div id="doctor-report-content" className="space-y-8">
+          <div className="text-center border-b pb-4">
+            <h1 className="text-2xl font-bold text-slate-800">{routineTitle}</h1>
+            <p className="text-slate-500">Personalized Skincare Plan</p>
+            <p className="text-xs text-slate-400 mt-1">Generated on: {new Date().toLocaleDateString()}</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
-                <h3 className="text-base font-semibold text-slate-700 mb-2 border-b pb-1">AI Skin Analysis Findings</h3>
+                <h3 className="text-lg font-semibold text-slate-700 mb-3 border-b pb-2">AI Skin Analysis Findings</h3>
                 {analysisResult.map(category => {
                     const style = getCategoryStyle(category.category);
                     const Icon = style.icon;
                     return (
-                        <div key={category.category} className="mb-2">
-                            <h4 className={`font-bold text-sm flex items-center gap-1.5 ${style.tailwind.text}`}>
-                                <Icon className={`w-4 h-4 ${style.tailwind.icon}`} />
+                        <div key={category.category} className="mb-3">
+                            <h4 className={`font-bold text-base flex items-center gap-2 ${style.tailwind.text}`}>
+                                <Icon className={`w-5 h-5 ${style.tailwind.icon}`} />
                                 {category.category}
                             </h4>
-                            <ul className="list-disc list-inside pl-2 text-xs text-slate-600">
+                            <ul className="list-disc list-inside pl-2 text-sm text-slate-600">
                                 {category.conditions.map(c => <li key={c.name}>{c.name} ({c.location})</li>)}
                             </ul>
                         </div>
@@ -141,27 +141,27 @@ const DoctorReport: React.FC<DoctorReportProps> = ({
             </div>
             {primaryImage && (
                 <div className="flex justify-center items-start">
-                    <img src={primaryImage} alt="Your Face" className="rounded-lg shadow-md max-h-36 border"/>
+                    <img src={primaryImage} alt="Your Face" className="rounded-lg shadow-md max-h-48 border"/>
                 </div>
             )}
           </div>
           
           <div>
-            <h3 className="text-base font-semibold text-slate-700 mb-2 border-b pb-1">Your Skincare Goals</h3>
-            <ul className="list-disc list-inside text-slate-600 text-sm space-y-0.5">
+            <h3 className="text-lg font-semibold text-slate-700 mb-3 border-b pb-2">Your Skincare Goals</h3>
+            <ul className="list-disc list-inside text-slate-600 space-y-1">
               {goalLabels.map(goal => <li key={goal}>{goal}</li>)}
             </ul>
           </div>
 
           <div>
-            <h3 className="text-base font-semibold text-slate-700 mb-2 border-b pb-1">Recommended Routine</h3>
-            <p className="text-xs text-slate-600 mb-3 italic">{recommendation.introduction}</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h3 className="text-lg font-semibold text-slate-700 mb-3 border-b pb-2">Recommended Routine</h3>
+            <p className="text-sm text-slate-600 mb-4 italic">{recommendation.introduction}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h4 className="font-bold text-sm text-slate-800 mb-1.5">AM Routine ☀️</h4>
-                <ul className="space-y-2">
+                <h4 className="font-bold text-md text-slate-800 mb-2">AM Routine ☀️</h4>
+                <ul className="space-y-3">
                   {recommendation.am.map(step => (
-                    <li key={step.productId} className="text-xs">
+                    <li key={step.productId} className="text-sm">
                       <strong className="text-slate-700 block">{step.stepType}: {step.productName}</strong>
                       <p className="text-slate-500 pl-2 border-l-2 border-slate-200 ml-1 mt-0.5">{step.purpose}</p>
                     </li>
@@ -169,10 +169,10 @@ const DoctorReport: React.FC<DoctorReportProps> = ({
                 </ul>
               </div>
               <div>
-                <h4 className="font-bold text-sm text-slate-800 mb-1.5">PM Routine 🌙</h4>
-                 <ul className="space-y-2">
+                <h4 className="font-bold text-md text-slate-800 mb-2">PM Routine 🌙</h4>
+                 <ul className="space-y-3">
                   {recommendation.pm.map(step => (
-                    <li key={step.productId} className="text-xs">
+                    <li key={step.productId} className="text-sm">
                       <strong className="text-slate-700 block">{step.stepType}: {step.productName}</strong>
                       <p className="text-slate-500 pl-2 border-l-2 border-slate-200 ml-1 mt-0.5">{step.purpose}</p>
                     </li>
@@ -183,32 +183,32 @@ const DoctorReport: React.FC<DoctorReportProps> = ({
           </div>
           
           <div>
-             <h3 className="text-base font-semibold text-slate-700 mb-2 border-b pb-1">Additional Advice</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+             <h3 className="text-lg font-semibold text-slate-700 mb-3 border-b pb-2">Additional Advice</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                   <div>
-                      <h4 className="font-bold text-slate-800 mb-1.5">Key Ingredients</h4>
-                       <ul className="list-disc list-inside text-slate-600 space-y-0.5">
+                      <h4 className="font-bold text-slate-800 mb-2">Key Ingredients</h4>
+                       <ul className="list-disc list-inside text-slate-600 space-y-1">
                           {recommendation.keyIngredients.map(ing => <li key={ing}>{ing}</li>)}
                       </ul>
                   </div>
                    <div>
-                      <h4 className="font-bold text-slate-800 mb-1.5">Lifestyle Tips</h4>
-                       <ul className="list-disc list-inside text-slate-600 space-y-0.5">
+                      <h4 className="font-bold text-slate-800 mb-2">Lifestyle Tips</h4>
+                       <ul className="list-disc list-inside text-slate-600 space-y-1">
                           {recommendation.lifestyleTips.map(tip => <li key={tip}>{tip}</li>)}
                       </ul>
                   </div>
               </div>
           </div>
 
-          <div className="pt-2 border-t">
-              <h4 className="font-bold text-sm text-slate-800 mb-1">Disclaimer</h4>
-              <p className="text-[10px] text-slate-500">{recommendation.disclaimer}</p>
+          <div className="pt-4 border-t">
+              <h4 className="font-bold text-slate-800 mb-2">Disclaimer</h4>
+              <p className="text-xs text-slate-500">{recommendation.disclaimer}</p>
           </div>
 
         </div>
       </div>
 
-      <div className="flex-shrink-0 flex flex-wrap justify-center sm:justify-between items-center mt-4 pt-4 border-t border-slate-200 gap-3">
+      <div className="flex-shrink-0 flex flex-wrap justify-center sm:justify-between items-center mt-8 pt-6 border-t border-slate-200 gap-4">
         <Button onClick={onBack} variant="secondary" size="sm" className="gap-2">
             <ArrowLeftIcon className="w-4 h-4" />
             Back to Plan
