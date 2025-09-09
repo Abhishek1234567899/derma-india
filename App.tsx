@@ -197,19 +197,19 @@ const App: React.FC = () => {
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />
-      <div className="w-full h-screen flex flex-col">
+      <div className="w-full h-screen flex flex-col pt-20 lg:pt-0">
         <Header 
             onReset={resetState} 
             onCartClick={() => setIsCartOpen(true)} 
             cartItemCount={totalCartItems} 
             onMenuClick={() => setIsSidebarOpen(true)}
         />
-        <main className={`w-full flex-grow overflow-y-auto flex items-start justify-center px-4 sm:px-6 md:px-8 pt-6 lg:pt-12 ${step === 2 ? 'pb-4 sm:pb-6' : 'pb-8 sm:pb-12'}`}>
+        <main className={`w-full flex-grow overflow-y-auto flex items-start justify-center px-4 sm:px-6 md:px-8 pt-16 sm:pt-20 md:pt-24 ${step === 2 ? 'pb-4 sm:pb-6' : 'pb-8 sm:pb-12'}`}>
             <div className="w-full h-full transition-all duration-300">
                 {step === 4 ? (
                   renderStep()
                 ) : (
-                  <div className="bg-brand-surface rounded-2xl shadow-lifted p-6 sm:p-8 h-full flex flex-col border-t-4 border-brand-primary overflow-y-hidden">
+                  <div className="bg-brand-surface rounded-2xl shadow-lifted p-6 sm:p-8 h-full flex flex-col border-t-4 border-brand-primary">
                     {renderStep()}
                   </div>
                 )}
