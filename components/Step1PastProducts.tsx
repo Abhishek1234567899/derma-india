@@ -1,283 +1,113 @@
-import React, { useState } from 'react';
-import { PastProduct } from '../types';
+import React from 'react';
+import { RefreshCw, X, CheckIcon } from './Icons';
 import Button from './common/Button';
-import { COMMON_PRODUCTS, COMMON_DURATIONS } from '../constants';
-import { X, Plus, ImageIcon, CameraIcon, UploadCloud, TrashIcon } from './Icons';
-import CameraCapture from './CameraCapture';
-import Select from './common/Select';
 
-interface Step1Props {
-  onNext: () => void;
-  pastProducts: PastProduct[];
-  setPastProducts: React.Dispatch<React.SetStateAction<PastProduct[]>>;
+interface Step1PastProductsProps {
+  isOpen: boolean;
+  onClose: () => void;
+  currentStep: number;
+  onReset: () => void;
 }
 
-const Step1PastProducts: React.FC<Step1Props> = ({ onNext, pastProducts, setPastProducts }) => {
-  const [selectedCommonProduct, setSelectedCommonProduct] = useState('');
-  const [customProductName, setCustomProductName] = useState('');
-  const [isUsing, setIsUsing] = useState(true);
-  const [duration, setDuration] = useState('');
-  const [cameraForProduct, setCameraForProduct] = useState<string | null>(null);
-  const [newProductImage, setNewProductImage] = useState<string | undefined>();
-  const [isCameraForNewProductOpen, setIsCameraForNewProductOpen] = useState(false);
+const steps = [
+  { id: 1, name: 'Start', description: 'Tell me a bit about yourself!' },
+  { id: 2, name: 'Health Questionnaire', description: 'Complete a health questionnaire.' },
+  { id: 3, name: 'Hair & Scalp Analysis', description: 'Upload photos for AI analysis.' },
+  { id: 4, name: 'Your Goals', description: 'Select your desired outcomes.' },
+  { id: 5, name: 'Your Plan', description: 'Receive your personalized routine.' },
+  { id: 6, name: "Doctor's Report", description: 'Review a summary of your results.' },
+  { id: 7, name: 'AI Assistant', description: 'Ask questions about your plan.' },
+];
 
-  const productNameToAdd = 
-    selectedCommonProduct === 'other' 
-    ? customProductName.trim() 
-    : (selectedCommonProduct && selectedCommonProduct !== 'none' ? selectedCommonProduct : '');
-
-  const handleCommonProductSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setSelectedCommonProduct(value);
-    if (value !== 'other') {
-      setCustomProductName(''); 
-    }
-  };
-
-  const handleAddProduct = () => {
-    if (!productNameToAdd || !duration.trim()) return;
-
-    const productToAdd: PastProduct = {
-      id: new Date().toISOString() + productNameToAdd,
-      name: productNameToAdd,
-      isUsing,
-      duration,
-      image: newProductImage,
-    };
-
-    setPastProducts(prev => [productToAdd, ...prev]);
-    
-    // Reset form
-    setSelectedCommonProduct('');
-    setCustomProductName('');
-    setIsUsing(true);
-    setDuration('');
-    setCameraForProduct(null);
-    setNewProductImage(undefined);
-  };
-  
-  const handleRemoveProduct = (id: string) => {
-    setPastProducts(pastProducts.filter(p => p.id !== id));
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, productId: string) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPastProducts(prev => prev.map(p => p.id === productId ? { ...p, image: reader.result as string } : p));
-      };
-      reader.readAsDataURL(file);
-      e.target.value = '';
-    }
-  };
-
-  const handlePhotoCapture = (imageDataUrl: string) => {
-    if (cameraForProduct) {
-      setPastProducts(prev => prev.map(p => p.id === cameraForProduct ? { ...p, image: imageDataUrl } : p));
-    }
-    setCameraForProduct(null);
-  };
-
-  const handleNewProductImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewProductImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-      e.target.value = '';
-    }
-  };
-
-    const handleNewProductPhotoCapture = (imageDataUrl: string) => {
-        setNewProductImage(imageDataUrl);
-        setIsCameraForNewProductOpen(false);
-    };
-
-
-  const handleRemoveImage = (productId: string) => {
-      setPastProducts(prev => prev.map(p => p.id === productId ? { ...p, image: undefined } : p));
-  }
-
+const Step1PastProducts: React.FC<Step1PastProductsProps> = ({ isOpen, onClose, currentStep, onReset }) => {
   return (
-    <div className="animate-fade-in-up h-full flex flex-col w-full">
-        <div className="flex-grow overflow-y-auto pr-2 -mr-2">
-          <h2 className="text-xl sm:text-2xl font-extrabold text-brand-text-main mb-2">
-              <span className="text-brand-primary">Step 1:</span> Past Product Usage
-          </h2>
-          <p className="text-sm sm:text-base text-brand-text-muted mb-6 sm:mb-8">Tell us about products you've used. This helps us avoid recommending things that didn't work for you.</p>
+    <>
+      <div
+        className={`fixed inset-0 bg-black/60 z-40 transition-opacity duration-300 lg:hidden ${
+          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={onClose}
+        aria-hidden="true"
+      ></div>
+      <div
+        className={`fixed top-0 left-0 h-full w-full max-w-xs bg-slate-50 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mobile-menu-title"
+      >
+        <div className="flex flex-col h-full">
+          <header className="flex items-center justify-between p-4 border-b border-slate-200 bg-white">
+            <h2 id="mobile-menu-title" className="text-lg font-bold text-slate-900">
+                Progress
+            </h2>
+            <Button variant="ghost" size="sm" onClick={onClose} className="!p-2 !rounded-full">
+              <X className="w-6 h-6" />
+            </Button>
+          </header>
 
-          <div className="mb-8 flex flex-col gap-6">
-            <div>
-              <Select
-                id="common-product-select"
-                label="Common Products (Select one or 'Other')"
-                value={selectedCommonProduct}
-                onChange={handleCommonProductSelect}
-              >
-                <option value="" disabled>-- Select a product --</option>
-                {COMMON_PRODUCTS.map(p => <option key={p} value={p}>{p}</option>)}
-                <option value="other">Other (Please specify)</option>
-                <option value="none">None of these</option>
-              </Select>
-            </div>
+          <div className="flex-grow overflow-y-auto p-6">
+             <ol className="relative">
+              {steps.map((step, stepIdx) => {
+                const isCurrent = currentStep === step.id;
+                const isCompleted = currentStep > step.id;
+                
+                let circleClass = 'border-slate-300 bg-white';
+                if (isCurrent) circleClass = 'border-brand-primary bg-brand-primary';
+                if (isCompleted) circleClass = 'border-green-500 bg-green-500';
+                
+                let lineClass = 'border-slate-200';
+                if (isCompleted) lineClass = 'border-green-500';
 
-            {selectedCommonProduct === 'other' && (
-              <div className="animate-fade-in-up">
-                  <input
-                      type="text"
-                      id="customProductName"
-                      value={customProductName}
-                      onChange={(e) => setCustomProductName(e.target.value)}
-                      className="block w-full bg-white text-brand-text-main placeholder-slate-400 border border-slate-300 rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-brand-primary-light focus:border-brand-primary-light transition-all text-base shadow-sm"
-                      placeholder="Enter product name..."
-                      autoFocus
-                  />
-              </div>
-            )}
-            
-            {productNameToAdd && (
-              <div className="space-y-4 animate-fade-in-up">
-                <h3 className="text-base font-semibold text-brand-text-main">Set Details for "{productNameToAdd}"</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                      <label className="block text-sm font-medium text-brand-text-main mb-1.5">Are you currently using it?</label>
-                      <div className="relative w-full h-11 bg-slate-200 rounded-lg p-1 flex items-center border border-slate-300">
-                        <div className={`absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-white rounded-md shadow-sm transition-transform duration-300 ease-in-out ${isUsing ? 'translate-x-0' : 'translate-x-full'}`}></div>
-                        <button type="button" onClick={() => setIsUsing(true)} className={`flex-1 text-center font-semibold z-10 transition-colors text-sm ${isUsing ? 'text-brand-primary' : 'text-slate-600'}`}>Yes</button>
-                        <button type="button" onClick={() => setIsUsing(false)} className={`flex-1 text-center font-semibold z-10 transition-colors text-sm ${!isUsing ? 'text-brand-primary' : 'text-slate-600'}`}>No</button>
+
+                return (
+                  <li key={step.name} className="pb-10 last:pb-0 relative">
+                    <div className="flex items-start">
+                      <div className="flex flex-col items-center mr-4">
+                        <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors duration-300 ${circleClass}`}>
+                           {isCompleted ? (
+                             <CheckIcon className="w-5 h-5 text-white" />
+                          ) : isCurrent ? (
+                             <div className="w-3 h-3 bg-white rounded-full"></div>
+                          ) : null}
+                        </div>
                       </div>
-                    </div>
-                    <Select
-                      id="duration"
-                      label="How long have you used it?"
-                      value={duration}
-                      onChange={(e) => setDuration(e.target.value)}
-                      required
-                    >
-                      <option value="" disabled>Select duration</option>
-                      {COMMON_DURATIONS.map((d) => (
-                        <option key={d} value={d}>{d}</option>
-                      ))}
-                    </Select>
-                </div>
-                 <div>
-                    <label className="block text-sm font-medium text-brand-text-main mb-1.5">Add a Photo (Optional)</label>
-                    <div className="flex items-center gap-4">
-                        <div className="w-20 h-20 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 flex-shrink-0 relative group">
-                            {newProductImage ? (
-                                <>
-                                    <img src={newProductImage} alt="New product preview" className="w-full h-full rounded-lg object-contain" />
-                                    <button onClick={() => setNewProductImage(undefined)} className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600" aria-label="Remove image">
-                                        <X className="w-3 h-3" />
-                                    </button>
-                                </>
-                            ) : (
-                                <ImageIcon className="w-8 h-8 text-slate-400" />
-                            )}
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="new-product-image-upload" className="cursor-pointer">
-                                <Button as="div" variant="secondary" size="sm" className="w-full gap-2 !justify-start !px-3">
-                                    <UploadCloud className="w-4 h-4" /> Upload File
-                                </Button>
-                                <input id="new-product-image-upload" type="file" className="sr-only" accept="image/*" onChange={handleNewProductImageUpload} />
-                            </label>
-                            <Button onClick={() => setIsCameraForNewProductOpen(true)} variant="secondary" size="sm" className="w-full gap-2 !justify-start !px-3">
-                                <CameraIcon className="w-4 h-4" /> Use Camera
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-              </div>
-            )}
-
-            <div className="flex justify-end">
-                <Button onClick={handleAddProduct} className="gap-1.5" size="sm" disabled={!productNameToAdd || !duration.trim()}>
-                    <Plus className="w-4 h-4" /> 
-                    Add Product
-                </Button>
-            </div>
-          </div>
-          
-          {pastProducts.length > 0 && (
-            <div className="mb-6">
-              <h3 className="text-base sm:text-lg font-semibold text-brand-text-main mb-4">Your Products:</h3>
-              <ul className="space-y-3">
-                {pastProducts.map(p => (
-                  <li key={p.id} className="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-soft animate-fade-in-up">
-                      <div className="w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 flex-shrink-0 relative group">
-                        {p.image ? (
-                          <>
-                            <img src={p.image} alt={p.name} className="w-full h-full rounded-lg object-contain" />
-                            <button onClick={() => handleRemoveImage(p.id)} className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600" aria-label="Remove image">
-                                <X className="w-3 h-3" />
-                            </button>
-                          </>
+                      <div className="pt-1">
+                        <p className={`font-bold transition-colors duration-300 ${isCurrent ? 'text-brand-primary' : 'text-slate-800'}`}>{step.name}</p>
+                        <p className="text-xs text-slate-500">{step.description}</p>
+                        {isCompleted ? (
+                          <span className="mt-1 inline-flex items-center rounded-md bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+                            Completed
+                          </span>
+                        ) : isCurrent ? (
+                          <span className="mt-1 inline-flex items-center rounded-md bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                            In Progress
+                          </span>
                         ) : (
-                           <div className="flex flex-col items-center gap-1">
-                                <ImageIcon className="w-6 h-6 text-slate-400" />
-                                <span className="text-xs text-slate-500">No Image</span>
-                           </div>
+                          <span className="mt-1 inline-flex items-center rounded-md bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-600">
+                            Pending
+                          </span>
                         )}
                       </div>
-                      
-                      <div className="min-w-0 flex-1">
-                          <p className="font-bold text-sm sm:text-base text-brand-text-main truncate">{p.name}</p>
-                          <p className={`text-xs sm:text-sm font-medium ${p.isUsing ? 'text-green-600' : 'text-slate-500'}`}>{p.isUsing ? 'Currently using' : 'Used in past'} for {p.duration}</p>
-                      </div>
-
-                      <div className="flex flex-col sm:flex-row items-center gap-2 flex-shrink-0">
-                         <label htmlFor={`image-upload-${p.id}`} className="cursor-pointer" title="Upload Image">
-                            <Button as="div" variant="secondary" size="sm" className="!p-2.5 !rounded-lg">
-                              <UploadCloud className="w-5 h-5" />
-                            </Button>
-                            <input id={`image-upload-${p.id}`} type="file" className="sr-only" accept="image/*" onChange={(e) => handleImageUpload(e, p.id)} />
-                          </label>
-                          <Button onClick={() => setCameraForProduct(p.id)} variant="secondary" size="sm" className="!p-2.5 !rounded-lg" title="Take Photo">
-                            <CameraIcon className="w-5 h-5" />
-                          </Button>
-                         <Button
-                              onClick={() => handleRemoveProduct(p.id)}
-                              variant="secondary"
-                              size="sm"
-                              className="!p-2.5 !rounded-lg !border-slate-300 !text-red-600 hover:!bg-red-50 hover:!border-red-400"
-                              title="Remove Product"
-                          >
-                              <TrashIcon className="w-5 h-5" />
-                          </Button>
-                      </div>
+                    </div>
+                    {stepIdx !== steps.length - 1 && (
+                      <div className={`absolute top-10 left-3.5 h-full w-px border-l-2 border-dashed transition-colors duration-300 ${lineClass}`}></div>
+                    )}
                   </li>
-                ))}
-              </ul>
-            </div>
-          )}
+                );
+              })}
+            </ol>
+          </div>
+           <footer className="p-4 border-t border-slate-200 bg-white">
+                <Button onClick={onReset} variant="primary" size="md" className="w-full gap-2">
+                    <RefreshCw className="w-4 h-4" />
+                    Start Over
+                </Button>
+            </footer>
         </div>
-
-        <div className="flex-shrink-0 flex justify-between mt-8 pt-6 border-t border-slate-200">
-          <Button onClick={onNext} variant="secondary" size="sm">
-            Skip
-          </Button>
-          <Button onClick={onNext} variant="primary" size="sm">
-            Next: Analyze My Skin
-          </Button>
-        </div>
-        
-        {isCameraForNewProductOpen && (
-            <CameraCapture
-                onCapture={handleNewProductPhotoCapture}
-                onClose={() => setIsCameraForNewProductOpen(false)}
-            />
-        )}
-        {cameraForProduct && (
-          <CameraCapture
-              onCapture={handlePhotoCapture}
-              onClose={() => setCameraForProduct(null)}
-          />
-        )}
-    </div>
+      </div>
+    </>
   );
 };
 

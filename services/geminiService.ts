@@ -1,14 +1,12 @@
 
-
 import { GoogleGenAI, GenerateContentResponse, Type, GenerateContentParameters } from "@google/genai";
-import { PastProduct, SkinConditionCategory, SkincareRoutine } from '../types';
+import { HairProfileData, SkinConditionCategory, SkincareRoutine } from '../types';
 import { DERMATICS_INDIA_PRODUCTS } from "../productData";
 
 if (!process.env.API_KEY) {
     throw new Error("API_KEY environment variable is not set.");
 }
 
-// Split the API_KEY environment variable by commas to support multiple keys
 const apiKeys = process.env.API_KEY.split(',')
     .map(key => key.trim())
     .filter(key => key);
@@ -17,15 +15,8 @@ if (apiKeys.length === 0) {
     throw new Error("API_KEY environment variable is set, but contains no valid keys.");
 }
 
-// Create an array of GoogleGenAI instances for failover
 const aiInstances = apiKeys.map(apiKey => new GoogleGenAI({ apiKey }));
 
-/**
- * Attempts to generate content using a pool of AI instances, failing over to the next key on specific errors.
- * @param params - The parameters for the generateContent call.
- * @returns A promise that resolves with the GenerateContentResponse.
- * @throws An error if all API keys fail.
- */
 async function generateContentWithFailover(params: GenerateContentParameters): Promise<GenerateContentResponse> {
     let lastError: Error | null = null;
 
@@ -33,30 +24,25 @@ async function generateContentWithFailover(params: GenerateContentParameters): P
         const ai = aiInstances[i];
         try {
             const response = await ai.models.generateContent(params);
-            // If the call is successful, return the response immediately.
             return response;
         } catch (error) {
             lastError = error as Error;
             console.warn(`API key ${i + 1}/${aiInstances.length} failed: ${lastError.message}`);
             
             const errorMessage = lastError.message.toLowerCase();
-            // Check for specific, retriable error messages
             const isRetriable = 
                 errorMessage.includes('api key not valid') ||
                 errorMessage.includes('quota') ||
                 errorMessage.includes('internal error') ||
-                errorMessage.includes('500') || // server error
-                errorMessage.includes('503'); // service unavailable
+                errorMessage.includes('500') || 
+                errorMessage.includes('503');
 
             if (!isRetriable) {
-                // If the error is not something a key switch can fix (e.g., bad request), throw it immediately.
                 throw lastError;
             }
-            // Otherwise, the loop will continue and try the next key.
         }
     }
 
-    // If the loop completes without returning, all keys have failed.
     throw new Error(`All ${aiInstances.length} API keys failed. Last error: ${lastError?.message || 'Unknown error'}`);
 }
 
@@ -79,20 +65,48 @@ export const analyzeImage = async (images: File[]): Promise<SkinConditionCategor
     try {
         const imageParts = await Promise.all(images.map(fileToGenerativePart));
         const textPart = {
-             text: `Analyze these facial images in detail. They may show different angles of the same person's face (e.g., front, left side, right side). Provide one single, consolidated analysis based on all images provided. Identify all potential skin conditions. Group them into relevant categories like 'Acne & Breakouts', 'Oil Control & Sebum', 'Skin Texture & Surface', 'Pigmentation', 'Hydration Levels', 'Signs of Aging', 'Redness & Sensitivity'. 
-             
-             For each specific condition you identify, provide:
-             1. A 'name' for the condition (e.g., 'Pustules').
-             2. A 'confidence' score from 0 to 100 on how certain you are.
-             3. A 'location' string describing the primary area on the face (e.g., "Forehead", "Cheeks", "Nose", "Chin", "Around Mouth", "General Face").
-             4. An array of 'boundingBoxes' showing where you found the condition. Each bounding box object must have an 'imageId' (the 0-based index of the input image it corresponds to) and a 'box' object with normalized coordinates (x1, y1, x2, y2) from 0.0 to 1.0. If a condition is general and not localized, use a location like "General Face" and return an empty array for boundingBoxes.
+             text: `You are an expert AI trichologist. Analyze these images of a person's hair and scalp in detail. The images may show different angles (e.g., front/hairline, top/crown, temples, back). Provide one single, consolidated analysis based on all images provided.
 
-             Provide the output strictly in JSON format according to the provided schema. Be thorough and identify as many relevant conditions as possible.
+Your task is to identify all potential conditions and characteristics from the comprehensive list below.
 
-             **CRITICAL INSTRUCTION FOR BALANCED ANALYSIS:** Strive to provide a balanced and accurate analysis. It's important to report on the healthy aspects of the skin to give the user a complete picture. If you identify clear, healthy areas, include a 'Healthy Skin' category with specific condition names like 'Clear and Balanced Skin on Forehead' or 'Good Hydration on Cheeks'. However, do not include the 'Healthy Skin' category if the facial images show widespread or severe conditions with no discernible healthy areas. Accuracy is the top priority.
-             
-             **CRITICAL INSTRUCTION FOR REDNESS:** Be very specific when identifying 'Redness & Sensitivity'. Do not classify a red spot as 'Redness' if that redness is a clear characteristic of another primary condition. For example, an inflamed acne pustule is naturally red; in this case, only identify it as 'Acne' and do not create a separate 'Redness' condition for the same spot. Only use the 'Redness & Sensitivity' category for conditions like rosacea, widespread irritation, flushing, or persistent patches of redness that are not directly and obviously part of another condition like a pimple.
-             `
+**Comprehensive List of Detectable Items:**
+
+**1. Hair Loss Types:**
+- **Common Types:** Androgenetic Alopecia (Genetic / Pattern Hair Loss), Telogen Effluvium (stress/illness related shedding), Anagen Effluvium (chemotherapy induced), Alopecia Areata (autoimmune, patchy bald spots), Traction Alopecia (from tight hairstyles), Cicatricial Alopecia (Scarring types), Trichotillomania (compulsive hair pulling), Diffuse Alopecia (systemic causes).
+- **Types More Common in Men:** Male Pattern Baldness (receding hairline + crown thinning), Crown & Vertex Baldness.
+- **Types More Common in Women:** Female Pattern Hair Loss (diffuse thinning, widened part), Postpartum Hair Loss, Menopausal Hair Loss, PCOS-related Hair Loss.
+
+**2. Scalp Conditions & Infestations:**
+- Seborrheic Dermatitis, Dandruff (Mild Seborrhea), Psoriasis, Tinea Capitis (Fungal), Folliculitis / Folliculitis Decalvans, Xerosis (Dry Scalp), Oily Scalp / Sebaceous Hypersecretion, Contact / Atopic Dermatitis, Pityriasis Amiantacea, Cradle Cap (Infant), Pediculosis Capitis (Lice / Nits), Demodex Infestation.
+
+**3. Hair Shaft Disorders & Damage:**
+- Trichorrhexis Nodosa, Monilethrix, Pili Torti, Loose Anagen Hair, Bubble Hair, Split Ends / Weathering, Color Damage, Heat Damage, Breakage.
+
+**4. Cosmetic Quality:**
+- Frizz, Porosity, Product Build-up.
+
+**5. Hair & Scalp Typing:**
+- Hair Density (Low / Medium / High), Hair Fiber Thickness (Fine / Medium / Coarse), Curl Type (1A–4C), Scalp Type (Dry / Normal / Oily / Combination).
+
+After identifying conditions or characteristics, group them into the most relevant category from the list below. Use your expert judgment. For example, 'Androgenetic Alopecia' goes into 'Pattern Hair Loss', 'Dandruff' goes into 'Scalp Conditions', and 'Frizz' would go into 'Hair Quality'.
+**Categories for Grouping:**
+- 'Pattern Hair Loss'
+- 'Diffuse Thinning'
+- 'Patchy Hair Loss'
+- 'Hairline Recession'
+- 'Scalp Conditions' (Includes infestations and fungal infections like Tinea Capitis)
+- 'Hair Breakage' (Includes hair shaft disorders and damage)
+- 'Hair Quality' (Includes cosmetic quality issues like frizz and porosity)
+- 'Hair & Scalp Type' (For hair and scalp typing characteristics)
+
+For each specific condition or characteristic you identify, provide:
+1. A 'name' (e.g., 'Androgenetic Alopecia', 'Dandruff', 'Frizz', 'High Density').
+2. A 'confidence' score from 0 to 100 on how certain you are.
+3. A 'location' string describing the primary area (e.g., "Crown", "Hairline", "General Scalp"). For typing, use "General Scalp".
+4. An array of 'boundingBoxes'. Each box must have an 'imageId' (0-based index) and normalized coordinates (x1, y1, x2, y2). If a condition is general (like Diffuse Thinning or Hair Density) and not localized to a specific box, use a location like "General Scalp" and return an empty array for boundingBoxes.
+
+Provide the output strictly in JSON format according to the provided schema. Be thorough. If the scalp and hair appear healthy with no issues, include a 'Healthy Hair & Scalp' category.
+`
         };
 
         const response: GenerateContentResponse = await generateContentWithFailover({
@@ -105,15 +119,15 @@ export const analyzeImage = async (images: File[]): Promise<SkinConditionCategor
                     items: {
                         type: Type.OBJECT,
                         properties: {
-                            category: { type: Type.STRING, description: "The category of skin conditions, e.g., 'Acne & Breakouts'." },
+                            category: { type: Type.STRING, description: "The category of hair/scalp conditions, e.g., 'Pattern Hair Loss'." },
                             conditions: {
                                 type: Type.ARRAY,
                                 items: {
                                     type: Type.OBJECT,
                                     properties: {
-                                        name: { type: Type.STRING, description: "The specific skin condition name, e.g., 'Hormonal Acne'." },
+                                        name: { type: Type.STRING, description: "The specific hair/scalp condition name, e.g., 'Androgenetic Alopecia'." },
                                         confidence: { type: Type.NUMBER, description: "The confidence score from 0 to 100." },
-                                        location: { type: Type.STRING, description: "The primary facial location of the condition, e.g., 'Forehead'." },
+                                        location: { type: Type.STRING, description: "The primary scalp location of the condition, e.g., 'Crown'." },
                                         boundingBoxes: {
                                             type: Type.ARRAY,
                                             description: "Array of bounding boxes for this condition.",
@@ -151,19 +165,16 @@ export const analyzeImage = async (images: File[]): Promise<SkinConditionCategor
 
     } catch (error) {
         console.error("Error analyzing image:", error);
-        throw new Error("Failed to analyze skin image. Please try again.");
+        throw new Error("Failed to analyze hair & scalp image. Please try again.");
     }
 };
 
 
 export const generateRoutine = async (
-    pastProducts: PastProduct[], 
+    hairProfile: Partial<HairProfileData>, 
     analysis: SkinConditionCategory[], 
     goals: string[]
 ): Promise<{recommendation: SkincareRoutine, title: string}> => {
-    const pastProductsString = pastProducts.length > 0 
-        ? pastProducts.map(p => `${p.name} (${p.isUsing ? 'currently using' : 'used in past'})`).join(', ') 
-        : 'None specified.';
     
     const analysisString = analysis.map(cat => 
         `${cat.category}: ${cat.conditions.map(c => `${c.name} at ${c.location} (${c.confidence}% confidence)`).join(', ')}`
@@ -185,37 +196,31 @@ export const generateRoutine = async (
     })), null, 2);
 
     const prompt = `
-        You are a world-class dermatologist and skincare expert for the brand "Dermatics India". Your task is to create a highly personalized and effective skincare routine for a user based on their data. You MUST use products exclusively from the Dermatics India catalog provided below. Your goal is to create the *best* possible routine, recommending as many or as few steps as genuinely necessary for the user's specific conditions and goals.
+        You are a world-class trichologist and haircare expert for the brand "Dermatics India". Your task is to create a highly personalized and effective haircare routine for a user based on their data. You MUST use products exclusively from the Dermatics India catalog provided below. Your goal is to create the *best* possible routine, recommending as many or as few steps as genuinely necessary for the user's specific conditions and goals.
 
         **Dermatics India Product Catalog:**
         ${productCatalogString}
 
         **User Data:**
-        - **Previously Used Products:** ${pastProductsString}
-        - **AI Skin Analysis Results:** ${analysisString}
-        - **Primary Skincare Goals:** ${goalsString}
+        - **User Hair Profile (from questionnaire):** ${JSON.stringify(hairProfile, null, 2)}
+        - **AI Hair & Scalp Analysis Results:** ${analysisString}
+        - **Primary Haircare Goals:** ${goalsString}
 
         **Instructions:**
-        1.  **Analyze and Select:** Carefully review the user's analysis and goals. From the "Dermatics India Product Catalog", select the MOST appropriate products to build a cohesive AM and PM routine. Pay close attention to the 'suitableFor' and 'keyIngredients' tags in the product data to match products to the user's skin conditions.
-        2.  **Create the Routine:** Construct a step-by-step AM (morning) and PM (evening) routine. Recommend only the products that are essential for an effective routine based on the user's data. For each step, you must provide:
-            - \`stepType\`: A single, descriptive word for the routine step (e.g., "Cleanser", "Toner", "Serum", "Moisturizer", "Sunscreen", "Treatment").
-            - \`productId\`: The exact ID of the **primary** selected product from the catalog (e.g., 'DI-C01').
-            - \`variantId\`: The exact variantId of the primary product from the catalog.
-            - \`productName\`: The full name of the primary product.
-            - \`productUrl\`: The URL for the primary product.
-            - \`productImageUrl\`: The URL for the primary product's image.
-            - \`price\`: The current price from the catalog.
-            - \`originalPrice\`: The original price from the catalog.
-            - \`purpose\`: A brief, personalized explanation of WHY this specific product is chosen for the user, linking it to their analysis.
-            - \`keyIngredients\`: An array of strings with the key ingredients for this product, taken directly from the catalog. This field is **MANDATORY** and must be accurately populated for every single product recommended.
-            - \`alternatives\`: An array of suitable alternative products from the catalog that would also work well for this step. Provide as many genuinely good alternatives as you can find, without a fixed limit. The quality of the match is more important than the quantity. For each alternative, you must provide its \`productId\`, \`variantId\`, \`productName\`, \`productUrl\`, \`productImageUrl\`, \`price\`, \`originalPrice\`, and **most importantly**, the \`keyIngredients\` array. The key ingredients are essential for grouping products for the user. If no good alternatives exist for a step, this array can be empty.
+        1.  **Analyze and Select:** Carefully review the user's hair profile, AI analysis, and goals. From the "Dermatics India Product Catalog", select the MOST appropriate products to build a cohesive AM and PM routine. For hair, this might be simplified to "Wash Day" and "Non-Wash Day" or just a single routine. Use your expert judgment. Pay close attention to the 'suitableFor' and 'keyIngredients' tags in the product data to match products to the user's hair conditions.
+        2.  **Create the Routine:** Construct a step-by-step AM (morning) and PM (evening) routine. For each step, you must provide:
+            - \`stepType\`: A single, descriptive word for the routine step (e.g., "Shampoo", "Conditioner", "Serum", "Mask", "Leave-in").
+            - \`productId\`, \`variantId\`, \`productName\`, \`productUrl\`, \`productImageUrl\`, \`price\`, \`originalPrice\`: All taken directly from the catalog for the selected product.
+            - \`purpose\`: A brief, personalized explanation of WHY this specific product is chosen for the user, linking it to their analysis and profile.
+            - \`keyIngredients\`: An array of strings with the key ingredients for this product, taken directly from the catalog. This is **MANDATORY**.
+            - \`alternatives\`: An array of suitable alternative products from the catalog. Provide these where appropriate. Include all required fields for each alternative. If no good alternatives exist, this array can be empty.
         3.  **Key Ingredients:** Based on the routine you created, identify an array of 4-5 key active ingredients from the selected products.
-        4.  **Lifestyle Tips:** Provide an array of general lifestyle and wellness tips that support the user's skin goals.
-        5.  **Disclaimer & Introduction:** Provide a standard disclaimer and a brief, encouraging introduction.
-        6.  **Routine Title:** Create a short, powerful title for the plan.
+        4.  **Lifestyle Tips:** Provide an array of general lifestyle and wellness tips that support the user's hair goals (e.g., diet tips, styling advice, stress management).
+        5.  **Disclaimer & Introduction:** Provide a standard disclaimer (mentioning consulting a dermatologist/trichologist) and a brief, encouraging introduction.
+        6.  **Routine Title:** Create a short, powerful title for the plan (e.g., "Hair Regrowth & Scalp Health Plan").
         
         **Output Format:**
-        Return a single JSON object. The root object must have a "title" key and a "recommendation" key. The "recommendation" object must contain "introduction", "am", "pm", "keyIngredients", "lifestyleTips", and "disclaimer". The "am" and "pm" arrays must follow the structure defined in Instruction #2. DO NOT recommend any products not in the provided catalog.
+        Return a single JSON object. The root object must have a "title" key and a "recommendation" key. The "recommendation" object must contain "introduction", "am", "pm", "keyIngredients", "lifestyleTips", and "disclaimer". If you only create a general routine, put all steps in the "am" array and leave the "pm" array empty. DO NOT recommend any products not in the provided catalog.
     `;
 
     const alternativeProductSchema = {
@@ -272,12 +277,12 @@ export const generateRoutine = async (
                                 am: {
                                     type: Type.ARRAY,
                                     items: routineStepSchema,
-                                    description: "Array of steps for the morning routine using Dermatics India products."
+                                    description: "Array of steps for the morning/main routine using Dermatics India products."
                                 },
                                 pm: {
                                     type: Type.ARRAY,
                                     items: routineStepSchema,
-                                    description: "Array of steps for the evening routine using Dermatics India products."
+                                    description: "Array of steps for the evening/secondary routine. Can be empty."
                                 },
                                 keyIngredients: {
                                     type: Type.ARRAY,
@@ -306,6 +311,6 @@ export const generateRoutine = async (
         return JSON.parse(jsonText);
     } catch (error) {
         console.error("Error generating routine with Gemini:", error);
-        throw new Error("Failed to generate skincare routine. Please try again.");
+        throw new Error("Failed to generate haircare routine. Please try again.");
     }
 };

@@ -2,13 +2,70 @@
 
 import React from 'react';
 
-export interface PastProduct {
-  id: string;
-  name: string;
-  isUsing: boolean;
-  duration: string;
-  image?: string; // base64 encoded string
+export interface HairProfileData {
+  // Common
+  name?: string;
+  phone?: string;
+  // Fix: Added optional email property to match form field in Step1Start.tsx
+  email?: string;
+  age?: string;
+  gender?: string;
+  
+  // Male
+  hairfallAmountMale?: string;
+  hairlossImageMale?: string;
+  hairlossLocationMale?: string;
+  familyHistory?: string;
+  dandruff?: string;
+  scalpItching?: string;
+  scalpType?: string;
+  breakage?: string;
+  suddenShedding?: string;
+  sleepQuality?: string;
+  stressLevel?: string;
+  constipation?: string;
+  energyLevels?: string;
+  supplements?: string;
+  medicalConditions?: string[];
+  weightChange?: string;
+  medications?: string;
+  proteinIntake?: string;
+  junkFoodIntake?: string;
+  waterIntake?: string;
+  alcoholSmoking?: string;
+  hairwashFrequency?: string;
+  hairTreatments?: string[];
+  medicatedProducts?: string;
+
+  // Female
+  hairfallAmountFemale?: string;
+  hairfallDuration?: string;
+  hairVolume?: string;
+  hairFeel?: string[];
+  hairTreatmentsFemale?: string[];
+  dandruffFemale?: string;
+  ironLevels?: string;
+  hormonalIssues?: string[];
+  lifeStages?: string;
+  recentChanges?: string[];
+  digestionIssues?: string[];
+  sleepQualityFemale?: string;
+  stressLevelFemale?: string;
+  energyLevelsFemale?: string;
+  supplementsFemale?: string;
+  foodHabits?: string;
+  scalpItchingFemale?: string;
+  scalpBuildup?: string;
+  scalpDryness?: string;
+
+  // Deprecated fields from old questionnaire, kept for potential compatibility
+  hairfallAmount?: string;
+  hairlossImage?: string;
+  hairlossLocation?: string;
+  irregularCycles?: string;
+  pregnancyStatus?: string;
 }
+
 
 export interface BoundingBox {
   imageId: number;

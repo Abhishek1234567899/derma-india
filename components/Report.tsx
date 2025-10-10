@@ -17,7 +17,7 @@ interface ReportProps {
   onBulkAddToCart: (products: (RoutineStep | AlternativeProduct)[]) => void;
   faceImages: FaceImage[];
   analysisResult: SkinConditionCategory[] | null;
-  skincareGoals: string[];
+  haircareGoals: string[];
 }
 
 type UnifiedRoutineStep = RoutineStep & { usage: 'AM' | 'PM' | 'AM & PM' };
@@ -30,7 +30,7 @@ const InfoIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
-const StarIcon = ({ className, isHalf = false }: { className: string, isHalf?: boolean }) => (
+const StarIcon: React.FC<{ className: string, isHalf?: boolean }> = ({ className, isHalf = false }) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
         <defs>
             <linearGradient id="half-star">
@@ -109,7 +109,7 @@ const groupProductsByIngredients = (products: (RoutineStep | AlternativeProduct)
   });
 
   if (productsWithoutIngredients.length > 0) {
-    finalGroups.set('General Skincare', productsWithoutIngredients);
+    finalGroups.set('General Haircare', productsWithoutIngredients);
   }
     
   return finalGroups;
@@ -148,7 +148,7 @@ const Report: React.FC<ReportProps> = ({
 
     const allSteps = Array.from(productMap.values());
     
-    const stepOrder = ['Cleanser', 'Toner', 'Treatment', 'Serum', 'Moisturizer', 'Sunscreen'];
+    const stepOrder = ['Shampoo', 'Conditioner', 'Mask', 'Treatment', 'Serum', 'Leave-in'];
     const uniqueTypes = [...new Set(allSteps.map(s => s.stepType))];
 
     uniqueTypes.sort((a, b) => {
@@ -243,7 +243,7 @@ const Report: React.FC<ReportProps> = ({
             </div>
         )}
         
-        <div className="p-4 pt-10 bg-slate-50 aspect-square flex items-center justify-center relative">
+        <div className="p-4 pt-10 aspect-square flex items-center justify-center relative">
              <a href={product.productUrl} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
                 <img src={product.productImageUrl} alt={product.productName} className="w-full h-full object-contain" />
             </a>
@@ -290,131 +290,133 @@ const Report: React.FC<ReportProps> = ({
   };
 
   return (
-    <div className="animate-fade-in-up h-full flex flex-col w-full">
-      <div id="report-content-wrapper" className="flex-grow overflow-y-auto bg-slate-50/80 rounded-2xl">
-          <div id="report-content" className="p-4 sm:p-6 lg:p-8 space-y-12">
-              <div className="text-center">
-                  <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">{routineTitle}</h1>
-                  <p className="text-brand-text-muted mt-2 text-base">Your personalized skincare routine.</p>
-              </div>
+    <div className="animate-fade-in-up flex flex-col w-full h-full bg-white rounded-2xl border-2 border-slate-300">
+      <div id="report-content-wrapper" className="flex-grow overflow-y-auto p-6 sm:p-8 lg:p-10">
+            <div className="text-center mb-8">
+                <h1 className="text-2xl font-extrabold text-slate-900">{routineTitle}</h1>
+                <p className="text-brand-text-muted mt-2">Your personalized haircare routine is ready.</p>
+            </div>
+            <div className="py-8">
+                <div className="space-y-12">
+                    {uniqueStepTypes.map((stepType) => {
+                        const stepsForType = unifiedRoutineSteps.filter(s => s.stepType === stepType);
+                        return (
+                            <div key={stepType}>
+                                {stepsForType.map((step, index) => {
+                                    const allProducts = [step, ...step.alternatives];
+                                    const groupedProducts = groupProductsByIngredients(allProducts);
+                                    
+                                    const sortedGroups = Array.from(groupedProducts.entries()).sort(([keyA, productsA], [keyB, productsB]) => {
+                                    const aHasPrimary = productsA.some(p => p.productId === step.productId);
+                                    const bHasPrimary = productsB.some(p => p.productId === step.productId);
+                                    
+                                    if (aHasPrimary && !bHasPrimary) {
+                                        return -1;
+                                    }
+                                    if (!aHasPrimary && bHasPrimary) {
+                                        return 1;
+                                    }
+                                    return keyA.localeCompare(keyB);
+                                    });
+                                    
+                                    return (
+                                        <div key={`step-${stepType}-${index}`}>
+                                            {sortedGroups.map(([ingredientGroup, products], groupIndex) => {
+                                                const groupKey = `${stepType}-${groupIndex}`;
+                                                const isExpanded = !!expandedGroups[groupKey];
+                                                const showSeeAllButton = products.length > 2;
+                                                
+                                                const sortedProducts = [...products].sort((a, b) => {
+                                                    if (a.productId === step.productId) return -1;
+                                                    if (b.productId === step.productId) return 1;
+                                                    return 0;
+                                                });
 
-              <div className="py-8">
-                  <div className="space-y-12">
-                      {uniqueStepTypes.map((stepType) => {
-                          const stepsForType = unifiedRoutineSteps.filter(s => s.stepType === stepType);
-                          return (
-                              <div key={stepType}>
-                                  {stepsForType.map((step, index) => {
-                                      const allProducts = [step, ...step.alternatives];
-                                      const groupedProducts = groupProductsByIngredients(allProducts);
-                                      
-                                      const sortedGroups = Array.from(groupedProducts.entries()).sort(([keyA, productsA], [keyB, productsB]) => {
-                                        const aHasPrimary = productsA.some(p => p.productId === step.productId);
-                                        const bHasPrimary = productsB.some(p => p.productId === step.productId);
-                                      
-                                        if (aHasPrimary && !bHasPrimary) {
-                                          return -1;
-                                        }
-                                        if (!aHasPrimary && bHasPrimary) {
-                                          return 1;
-                                        }
-                                        return keyA.localeCompare(keyB);
-                                      });
-                                      
-                                      return (
-                                          <div key={`step-${stepType}-${index}`}>
-                                              {sortedGroups.map(([ingredientGroup, products], groupIndex) => {
-                                                  const groupKey = `${stepType}-${groupIndex}`;
-                                                  const isExpanded = !!expandedGroups[groupKey];
-                                                  const showSeeAllButton = products.length > 2;
-                                                  
-                                                  const sortedProducts = [...products].sort((a, b) => {
-                                                      if (a.productId === step.productId) return -1;
-                                                      if (b.productId === step.productId) return 1;
-                                                      return 0;
-                                                  });
+                                                return (
+                                                    <div key={ingredientGroup} className="mb-8 last:mb-0">
+                                                        <div className={`flex justify-between items-center pb-2 border-b-2 border-slate-200 ${groupIndex > 0 ? 'mt-8' : ''}`}>
+                                                            <div>
+                                                                <h3 className="text-xl font-bold text-slate-700">
+                                                                    {step.stepType}
+                                                                </h3>
+                                                                {sortedGroups.length > 1 && (
+                                                                    <p className="text-sm text-slate-500 -mt-1">{ingredientGroup}</p>
+                                                                )}
+                                                            </div>
+                                                            {showSeeAllButton && (
+                                                                <button 
+                                                                    onClick={() => handleToggleExpand(groupKey)}
+                                                                    className="text-sm font-semibold text-brand-primary hover:text-brand-primary-hover flex items-center gap-1 lg:hidden"
+                                                                    aria-expanded={isExpanded}
+                                                                >
+                                                                    {isExpanded ? 'See Less' : 'See All'}
+                                                                    <ArrowRightIcon className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`} />
+                                                                </button>
+                                                            )}
+                                                        </div>
 
-                                                  return (
-                                                      <div key={ingredientGroup} className="mb-8 last:mb-0">
-                                                          <div className={`flex justify-between items-center pb-2 border-b-2 border-slate-200 ${groupIndex > 0 ? 'mt-8' : ''}`}>
-                                                              <h3 className="text-lg sm:text-xl font-bold text-slate-700">
-                                                                  {groupIndex === 0 ? step.stepType : `${step.stepType} ${groupIndex + 1}`}
-                                                              </h3>
-                                                              {showSeeAllButton && (
-                                                                  <button 
-                                                                      onClick={() => handleToggleExpand(groupKey)}
-                                                                      className="text-sm font-semibold text-brand-primary hover:text-brand-primary-hover flex items-center gap-1 lg:hidden"
-                                                                      aria-expanded={isExpanded}
-                                                                  >
-                                                                      {isExpanded ? 'See Less' : 'See All'}
-                                                                      <ArrowRightIcon className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`} />
-                                                                  </button>
-                                                              )}
-                                                          </div>
-
-                                                          <div className={`
-                                                              mt-4
-                                                              lg:grid lg:grid-cols-5 lg:gap-4 lg:pb-0
-                                                              ${isExpanded ? 
-                                                                  'grid grid-cols-2 gap-3 sm:gap-4' : 
-                                                                  'flex overflow-x-auto gap-3 pb-4 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'
-                                                              }
-                                                          `}>
-                                                              {sortedProducts.map(product => {
-                                                                  const isPrimary = product.productId === step.productId;
-                                                                  return (
-                                                                      <div key={product.productId} className={`
-                                                                          snap-start
-                                                                          lg:w-auto lg:flex-shrink
-                                                                          ${isExpanded ? 'w-full' : 'w-[48%] sm:w-[31%] flex-shrink-0'}
-                                                                      `}>
-                                                                          <ProductCard product={product} isPrimary={isPrimary} usage={step.usage} />
-                                                                      </div>
-                                                                  );
-                                                              })}
-                                                          </div>
-                                                      </div>
-                                                  )
-                                              })}
-                                          </div>
-                                      )
-                                  })}
-                              </div>
-                          )
-                      })}
-                  </div>
-              </div>
-          </div>
+                                                        <div className={`
+                                                            mt-4
+                                                            ${isExpanded
+                                                                ? 'grid grid-cols-2 gap-4 sm:grid-cols-3' // Expanded on mobile
+                                                                // Collapsed on mobile
+                                                                : 'flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scrollbar'
+                                                            }
+                                                            
+                                                            lg:grid lg:grid-cols-4 xl:grid-cols-5 lg:gap-4 lg:pb-0
+                                                        `}>
+                                                            {sortedProducts.map(product => {
+                                                                const isPrimary = product.productId === step.productId;
+                                                                return (
+                                                                    <div key={product.productId} className={
+                                                                        isExpanded
+                                                                        ? ''
+                                                                        : 'w-52 flex-shrink-0 snap-start lg:w-auto'
+                                                                    }>
+                                                                        <ProductCard product={product} isPrimary={isPrimary} usage={step.usage} />
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        )
+                    })}
+                </div>
+            </div>
       </div>
       
-      <div className="flex-shrink-0 flex justify-center items-center flex-wrap gap-4 p-6 border-t border-slate-200 bg-white rounded-b-2xl">
-        <Button onClick={onBack} variant="secondary" size="sm" className="gap-2">
+      <div className="flex-shrink-0 flex justify-between items-center flex-wrap gap-4 p-6 border-t border-slate-200">
+        <Button onClick={onBack} variant="ghost" size="md" className="gap-2">
             <ArrowLeftIcon className="w-4 h-4" />
-            Back to Goals
+            Previous
         </Button>
-        <Button onClick={onReset} variant="secondary" size="sm" className="gap-2">
-          <RefreshCw className="w-4 h-4"/>
-          Start Over
-        </Button>
-        <Button
-          onClick={handleAddAllToCart}
-          variant="primary"
-          size="sm"
-          className="gap-2"
-          disabled={allAdded}
-        >
-          {allAdded ? (
-            <>
-              <CheckIcon className="w-5 h-5" /> All Added!
-            </>
-          ) : (
-            <>
-              <ShoppingCartIcon className="w-5 h-5" /> Add All to Cart
-            </>
-          )}
-        </Button>
-        <Button onClick={onNext} variant="primary" size="sm" className="gap-2">
-            Next: AI Doctor's Report
+        <div className="flex gap-4">
+          <Button
+            onClick={handleAddAllToCart}
+            variant="secondary"
+            size="md"
+            className="gap-2"
+            disabled={allAdded}
+          >
+            {allAdded ? (
+              <>
+                <CheckIcon className="w-5 h-5" /> All Added!
+              </>
+            ) : (
+              <>
+                <ShoppingCartIcon className="w-5 h-5" /> Add All to Cart
+              </>
+            )}
+          </Button>
+        </div>
+        <Button onClick={onNext} variant="primary" size="md" className="gap-2 bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
+            Next
             <ArrowRightIcon className="w-4 h-4" />
         </Button>
       </div>

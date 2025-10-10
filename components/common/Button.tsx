@@ -1,6 +1,5 @@
 import React from 'react';
 
-// FIX: Added anchor element attributes to allow the Button component to be used polymorphically as a link.
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   as?: React.ElementType;
   variant?: 'primary' | 'secondary' | 'ghost';
@@ -16,15 +15,15 @@ const Button: React.FC<ButtonProps> = ({ as: Component = 'button', variant = 'pr
   const baseClasses = 'inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-60 disabled:pointer-events-none active:scale-[0.98]';
   
   const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm sm:px-4 sm:py-2',
-    md: 'px-5 py-2.5 text-base sm:px-6 sm:py-3',
-    lg: 'px-6 py-3 text-lg sm:px-8 sm:py-4',
+    sm: 'px-4 py-2 text-sm',
+    md: 'px-5 py-2.5 text-base',
+    lg: 'px-6 py-3 text-lg',
   };
 
   const variantClasses = {
     primary: 'bg-brand-primary text-white shadow-interactive hover:bg-brand-primary-hover hover:shadow-interactive-hover focus-visible:ring-brand-primary focus-visible:ring-offset-brand-bg transform hover:-translate-y-0.5',
-    secondary: 'bg-brand-primary text-white shadow-interactive hover:bg-brand-primary-hover hover:shadow-interactive-hover focus-visible:ring-brand-primary focus-visible:ring-offset-brand-bg transform hover:-translate-y-0.5',
-    ghost: 'bg-transparent text-brand-primary hover:bg-brand-primary/10 shadow-none focus-visible:ring-brand-primary-light'
+    secondary: 'bg-slate-200 text-slate-700 hover:bg-slate-300 focus-visible:ring-slate-400',
+    ghost: 'bg-transparent text-brand-text-muted hover:text-brand-text-main shadow-none'
   };
 
   return (

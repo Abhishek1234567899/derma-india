@@ -1,21 +1,16 @@
+
 import React from 'react';
 import { SkincareGoal } from "./types";
-import { AcneIcon, OilDropIcon, TextureIcon, SparklesIcon, ZapIcon, HydrationIcon, AgingIcon, WindIcon, RednessIcon, ShieldCheckIcon, EyeIcon, PigmentationIcon, FolderIcon, HeartIcon, SunIcon, MinusIcon } from "./components/Icons";
+import { AcneIcon, OilDropIcon, TextureIcon, SparklesIcon, ZapIcon, HydrationIcon, WindIcon, RednessIcon, ShieldCheckIcon, FolderIcon, HeartIcon, SunIcon, MinusIcon, User } from "./components/Icons";
 
-export const SKINCARE_GOALS: SkincareGoal[] = [
-  { id: "acne_control", label: "Clear Acne & Breakouts", relatedConditions: ["Acne & Breakouts"], icon: AcneIcon },
-  { id: "oil_control", label: "Control Oil & Shine", relatedConditions: ["Oil Control & Sebum"], icon: OilDropIcon },
-  { id: "texture", label: "Refine Skin Texture", relatedConditions: ["Skin Texture & Surface"], icon: TextureIcon },
-  { id: "pores", label: "Minimize Pore Appearance", relatedConditions: ["Skin Texture & Surface", "Oil Control & Sebum"], icon: EyeIcon },
-  { id: "brightening", label: "Even Skintone & Brighten", relatedConditions: ["Pigmentation"], icon: SparklesIcon },
-  { id: "dark_spots", label: "Fade Dark Spots", relatedConditions: ["Pigmentation"], icon: ZapIcon },
-  { id: "hydration", label: "Boost Hydration", relatedConditions: ["Hydration Levels"], icon: HydrationIcon },
-  { id: "anti_aging", label: "Reduce Fine Lines & Wrinkles", relatedConditions: ["Signs of Aging"], icon: AgingIcon },
-  { id: "firmness", label: "Improve Firmness & Elasticity", relatedConditions: ["Signs of Aging"], icon: WindIcon },
-  { id: "redness_reduction", label: "Soothe Redness & Irritation", relatedConditions: ["Redness & Sensitivity"], icon: RednessIcon },
-  { id: "barrier_support", label: "Strengthen Skin Barrier", relatedConditions: ["Redness & Sensitivity", "Hydration Levels"], icon: ShieldCheckIcon },
-  { id: "maintain_healthy", label: "Maintain Healthy Skin", relatedConditions: ["Healthy Skin"], icon: HeartIcon },
-  { id: "none", label: "None of these", relatedConditions: [], icon: MinusIcon },
+export const HAIRCARE_GOALS: SkincareGoal[] = [
+  { id: "reduce_hair_fall", label: "Reduce Hair Fall", relatedConditions: ["Diffuse Thinning", "Pattern Hair Loss"], icon: MinusIcon },
+  { id: "promote_growth", label: "Promote Hair Growth", relatedConditions: ["Pattern Hair Loss", "Hairline Recession", "Patchy Hair Loss"], icon: SparklesIcon },
+  { id: "scalp_health", label: "Improve Scalp Health", relatedConditions: ["Scalp Conditions"], icon: ShieldCheckIcon },
+  { id: "dandruff_control", label: "Control Dandruff", relatedConditions: ["Scalp Conditions"], icon: AcneIcon },
+  { id: "strengthen_hair", label: "Strengthen & Reduce Breakage", relatedConditions: ["Hair Breakage"], icon: ZapIcon },
+  { id: "volume_thickness", label: "Increase Volume & Thickness", relatedConditions: ["Diffuse Thinning", "Pattern Hair Loss"], icon: WindIcon },
+  { id: "maintain_healthy", label: "Maintain Healthy Hair", relatedConditions: ["Healthy Hair & Scalp"], icon: HeartIcon },
   { id: "other", label: "Other", relatedConditions: [], icon: FolderIcon },
 ];
 
@@ -57,52 +52,58 @@ export const CATEGORY_STYLES: Record<string, {
         legendBg: string;
     };
 }> = {
-    'Healthy Skin': {
-        name: 'Healthy Skin', icon: ShieldCheckIcon, hex: '#22c55e', tailwind: {
+    'Healthy Hair & Scalp': {
+        name: 'Healthy Hair & Scalp', icon: ShieldCheckIcon, hex: '#22c55e', tailwind: {
             bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-800', icon: 'text-green-500',
             progress: 'bg-green-500', legendBorder: 'border-green-500', legendBg: 'bg-green-100',
         }
     },
-    'Acne & Breakouts': {
-        name: 'Acne & Breakouts', icon: AcneIcon, hex: '#ef4444', tailwind: {
-            bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-800', icon: 'text-red-500',
-            progress: 'bg-red-500', legendBorder: 'border-red-500', legendBg: 'bg-red-100',
-        }
-    },
-    'Oil Control & Sebum': {
-        name: 'Oil Control & Sebum', icon: OilDropIcon, hex: '#eab308', tailwind: {
-            bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-800', icon: 'text-yellow-500',
-            progress: 'bg-yellow-500', legendBorder: 'border-yellow-500', legendBg: 'bg-yellow-100',
-        }
-    },
-    'Skin Texture & Surface': {
-        name: 'Skin Texture & Surface', icon: TextureIcon, hex: '#06b6d4', tailwind: {
-            bg: 'bg-cyan-50', border: 'border-cyan-200', text: 'text-cyan-800', icon: 'text-cyan-500',
-            progress: 'bg-cyan-500', legendBorder: 'border-cyan-500', legendBg: 'bg-cyan-100',
-        }
-    },
-    'Pigmentation': {
-        name: 'Pigmentation', icon: PigmentationIcon, hex: '#a855f7', tailwind: {
-            bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-800', icon: 'text-purple-500',
-            progress: 'bg-purple-500', legendBorder: 'border-purple-500', legendBg: 'bg-purple-100',
-        }
-    },
-    'Signs of Aging': {
-        name: 'Signs of Aging', icon: AgingIcon, hex: '#6366f1', tailwind: {
+    'Pattern Hair Loss': {
+        name: 'Pattern Hair Loss', icon: User, hex: '#6366f1', tailwind: {
             bg: 'bg-indigo-50', border: 'border-indigo-200', text: 'text-indigo-800', icon: 'text-indigo-500',
             progress: 'bg-indigo-500', legendBorder: 'border-indigo-500', legendBg: 'bg-indigo-100',
         }
     },
-    'Hydration Levels': {
-        name: 'Hydration Levels', icon: HydrationIcon, hex: '#3b82f6', tailwind: {
-            bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-800', icon: 'text-blue-500',
-            progress: 'bg-blue-500', legendBorder: 'border-blue-500', legendBg: 'bg-blue-100',
+    'Diffuse Thinning': {
+        name: 'Diffuse Thinning', icon: WindIcon, hex: '#06b6d4', tailwind: {
+            bg: 'bg-cyan-50', border: 'border-cyan-200', text: 'text-cyan-800', icon: 'text-cyan-500',
+            progress: 'bg-cyan-500', legendBorder: 'border-cyan-500', legendBg: 'bg-cyan-100',
         }
     },
-    'Redness & Sensitivity': {
-        name: 'Redness & Sensitivity', icon: RednessIcon, hex: '#f43f5e', tailwind: {
-            bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-800', icon: 'text-rose-500',
-            progress: 'bg-rose-500', legendBorder: 'border-rose-500', legendBg: 'bg-rose-100',
+    'Patchy Hair Loss': {
+        name: 'Patchy Hair Loss', icon: MinusIcon, hex: '#f97316', tailwind: {
+            bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-800', icon: 'text-orange-500',
+            progress: 'bg-orange-500', legendBorder: 'border-orange-500', legendBg: 'bg-orange-100',
+        }
+    },
+    'Hairline Recession': {
+        name: 'Hairline Recession', icon: TextureIcon, hex: '#a855f7', tailwind: {
+            bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-800', icon: 'text-purple-500',
+            progress: 'bg-purple-500', legendBorder: 'border-purple-500', legendBg: 'bg-purple-100',
+        }
+    },
+    'Scalp Conditions': {
+        name: 'Scalp Conditions', icon: RednessIcon, hex: '#ef4444', tailwind: {
+            bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-800', icon: 'text-red-500',
+            progress: 'bg-red-500', legendBorder: 'border-red-500', legendBg: 'bg-red-100',
+        }
+    },
+    'Hair Breakage': {
+        name: 'Hair Breakage', icon: ZapIcon, hex: '#eab308', tailwind: {
+            bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-800', icon: 'text-yellow-500',
+            progress: 'bg-yellow-500', legendBorder: 'border-yellow-500', legendBg: 'bg-yellow-100',
+        }
+    },
+    'Hair Quality': {
+        name: 'Hair Quality', icon: TextureIcon, hex: '#db2777', tailwind: {
+            bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-800', icon: 'text-pink-500',
+            progress: 'bg-pink-500', legendBorder: 'border-pink-500', legendBg: 'bg-pink-100',
+        }
+    },
+    'Hair & Scalp Type': {
+        name: 'Hair & Scalp Type', icon: SparklesIcon, hex: '#10b981', tailwind: {
+            bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-800', icon: 'text-emerald-500',
+            progress: 'bg-emerald-500', legendBorder: 'border-emerald-500', legendBg: 'bg-emerald-100',
         }
     },
     'Default': {
@@ -119,15 +120,14 @@ export const getCategoryStyle = (category: string) => {
 };
 
 export const LOADING_TIPS: string[] = [
-  "Consistency is key! Follow your new routine daily for best results.",
-  "Drink plenty of water to keep your skin hydrated from the inside out.",
-  "Always remove makeup before bed to prevent clogged pores.",
-  "Don't forget sunscreen every morning, even on cloudy days.",
-  "A healthy, antioxidant-rich diet can significantly improve skin health.",
-  "Aim for 7-9 hours of quality sleep each night for optimal skin repair.",
-  "Avoid touching your face to prevent transferring bacteria and oils.",
-  "Change your pillowcases regularly to keep your skin clean as you sleep.",
-  "Be patient. Seeing the full benefits of a new routine can take several weeks."
+  "Consistency is key! Follow your new haircare routine regularly for best results.",
+  "A balanced diet rich in protein, iron, and vitamins is crucial for hair health.",
+  "Avoid tight hairstyles that can pull on your hair follicles and cause breakage.",
+  "Gentle scalp massages can help improve blood circulation and promote growth.",
+  "Drink plenty of water to keep your hair and scalp hydrated from the inside out.",
+  "Protect your hair from harsh sun exposure, just like you would for your skin.",
+  "Aim for 7-9 hours of quality sleep each night for optimal hair repair and growth.",
+  "Be patient. Seeing the full benefits of a new routine can take several weeks or months."
 ];
 
 export const LOADING_TIP_STYLES = [

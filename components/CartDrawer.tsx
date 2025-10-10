@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { CartItem } from '../types';
 import { X, Plus, MinusIcon, TrashIcon, ShoppingCartIcon } from './Icons';
@@ -19,15 +20,21 @@ const CartDrawer: React.FC<CartDrawerProps> = ({
   onUpdateQuantity,
 }) => {
 
-  // Generate Shopify checkout link that pre-populates the cart
   const checkoutUrl = React.useMemo(() => {
     if (cartItems.length === 0) {
-      return 'https://dermatics.in/cart'; // Default link if cart is empty
+      // Fallback for an empty cart.
+      return 'https://dermatics.in/account/login';
     }
     const itemsString = cartItems
       .map(item => `${item.variantId}:${item.quantity}`)
       .join(',');
-    return `https://dermatics.in/cart/${itemsString}`;
+    
+    // Create a relative path for the pre-populated cart.
+    const cartPath = `/cart/${itemsString}`;
+    
+    // Construct a URL that sends the user to the login page. After login,
+    // they should be redirected to their cart to begin checkout.
+    return `https://dermatics.in/account/login?checkout_url=${encodeURIComponent(cartPath)}`;
   }, [cartItems]);
 
   return (
@@ -87,7 +94,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({
                       <div className="flex items-center gap-2 mt-2">
                         <Button
                           size="sm"
-                          variant="secondary"
+                          variant="primary"
                           onClick={() => onUpdateQuantity(item.productId, item.quantity - 1)}
                           className="!p-1.5 !rounded-md"
                           aria-label={`Decrease quantity of ${item.productName}`}
@@ -97,7 +104,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({
                         <span className="font-bold text-lg text-slate-800 w-8 text-center" aria-live="polite">{item.quantity}</span>
                         <Button
                           size="sm"
-                          variant="secondary"
+                          variant="primary"
                           onClick={() => onUpdateQuantity(item.productId, item.quantity + 1)}
                           className="!p-1.5 !rounded-md"
                           aria-label={`Increase quantity of ${item.productName}`}
@@ -121,15 +128,15 @@ const CartDrawer: React.FC<CartDrawerProps> = ({
                 ))}
               </div>
 
-              <footer className="p-4 border-t border-slate-200 bg-white space-y-4">
-                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
-                    <p className="text-sm text-blue-700">This will take you to the Dermatics.in website with all your selected items ready for checkout.</p>
-                </div>
+              <footer className="p-4 border-t border-slate-200 bg-white">
                 <a href={checkoutUrl} target="_blank" rel="noopener noreferrer" className="w-full">
                     <Button size="sm" variant="primary" className="w-full">
                         Proceed to Checkout
                     </Button>
                 </a>
+                <p className="text-xs text-slate-500 mt-3 text-center">
+                    You will be redirected to Dermatics.in to log in and complete your purchase.
+                </p>
               </footer>
             </>
           )}

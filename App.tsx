@@ -1,29 +1,32 @@
 
 import React, { useState, useCallback } from 'react';
-import { PastProduct, SkinConditionCategory, SkincareRoutine, ChatMessage, FaceImage, CartItem, RoutineStep, AlternativeProduct } from './types';
-import Step1PastProducts from './components/Step1PastProducts';
-import Step2FaceAnalysis from './components/Step2FaceAnalysis';
-import Step3Goals from './components/Step3Goals';
-import DoctorReport from './components/DoctorReport';
-import Report from './components/Report';
-import Sidebar from './components/Sidebar';
+import { HairProfileData, SkincareRoutine, ChatMessage, FaceImage, CartItem, RoutineStep, AlternativeProduct, SkinConditionCategory } from './types';
+import Step1Start from './components/Step1Start';
+import Step2HealthQuestionnaire from './components/Step1HairQuestionnaire';
+import Step3HairAnalysis from './components/Step2HairAnalysis';
+import Step4Goals from './components/Step3Goals';
+import Step5YourPlan from './components/Report';
+import Step6DoctorReport from './components/DoctorReport';
+import ChatbotPage from './components/ChatbotPage';
+import TopHeader from './components/TopHeader';
 import Header from './components/Header';
 import CartDrawer from './components/CartDrawer';
-import ChatbotPage from './components/ChatbotPage';
+import Sidebar from './components/Sidebar';
+import Step1PastProducts from './components/Step1PastProducts';
 
 const App: React.FC = () => {
   const [step, setStep] = useState<number>(1);
-  const [pastProducts, setPastProducts] = useState<PastProduct[]>([]);
+  const [hairProfileData, setHairProfileData] = useState<Partial<HairProfileData>>({});
   const [faceImages, setFaceImages] = useState<FaceImage[]>([]);
   const [analysisResult, setAnalysisResult] = useState<SkinConditionCategory[] | null>(null);
-  const [skincareGoals, setSkincareGoals] = useState<string[]>([]);
+  const [haircareGoals, setHaircareGoals] = useState<string[]>([]);
   const [recommendation, setRecommendation] = useState<SkincareRoutine | null>(null);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [routineTitle, setRoutineTitle] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleNextStep = () => setStep(prev => prev + 1);
   const handlePrevStep = () => setStep(prev => prev - 1);
@@ -31,17 +34,17 @@ const App: React.FC = () => {
   const resetState = useCallback(() => {
     faceImages.forEach(image => URL.revokeObjectURL(image.previewUrl));
     setStep(1);
-    setPastProducts([]);
+    setHairProfileData({});
     setFaceImages([]);
     setAnalysisResult(null);
-    setSkincareGoals([]);
+    setHaircareGoals([]);
     setRecommendation(null);
     setChatHistory([]);
     setRoutineTitle('');
     setIsLoading(false);
     setCart([]);
     setIsCartOpen(false);
-    setIsSidebarOpen(false);
+    setIsMobileMenuOpen(false);
   }, [faceImages]);
 
   const handleAddToCart = (product: RoutineStep | AlternativeProduct) => {
@@ -99,15 +102,23 @@ const App: React.FC = () => {
     switch (step) {
       case 1:
         return (
-          <Step1PastProducts
-            onNext={handleNextStep}
-            pastProducts={pastProducts}
-            setPastProducts={setPastProducts}
-          />
+            <Step1Start
+                onNext={handleNextStep}
+                setHairProfileData={setHairProfileData}
+            />
         );
       case 2:
         return (
-          <Step2FaceAnalysis
+          <Step2HealthQuestionnaire
+            onNext={handleNextStep}
+            onBack={handlePrevStep}
+            hairProfileData={hairProfileData}
+            setHairProfileData={setHairProfileData}
+          />
+        );
+      case 3:
+        return (
+          <Step3HairAnalysis
             onNext={handleNextStep}
             onBack={handlePrevStep}
             faceImages={faceImages}
@@ -118,14 +129,14 @@ const App: React.FC = () => {
             isLoading={isLoading}
           />
         );
-      case 3:
+      case 4:
         return (
-          <Step3Goals
+          <Step4Goals
             onBack={handlePrevStep}
             analysisResult={analysisResult}
-            setSkincareGoals={setSkincareGoals}
-            skincareGoals={skincareGoals}
-            pastProducts={pastProducts}
+            setHaircareGoals={setHaircareGoals}
+            haircareGoals={haircareGoals}
+            pastProducts={hairProfileData}
             setRecommendation={setRecommendation}
             setRoutineTitle={setRoutineTitle}
             setStep={setStep}
@@ -133,9 +144,9 @@ const App: React.FC = () => {
             isLoading={isLoading}
           />
         );
-      case 4:
+      case 5:
         return (
-          <Report
+          <Step5YourPlan
             recommendation={recommendation}
             routineTitle={routineTitle}
             onReset={resetState}
@@ -143,14 +154,14 @@ const App: React.FC = () => {
             onNext={handleNextStep}
             faceImages={faceImages}
             analysisResult={analysisResult}
-            skincareGoals={skincareGoals}
+            haircareGoals={haircareGoals}
             onAddToCart={handleAddToCart}
             onBulkAddToCart={handleBulkAddToCart}
           />
         );
-      case 5:
+      case 6:
         return (
-          <DoctorReport
+          <Step6DoctorReport
             recommendation={recommendation}
             routineTitle={routineTitle}
             onReset={resetState}
@@ -158,14 +169,14 @@ const App: React.FC = () => {
             onNext={handleNextStep}
             faceImages={faceImages}
             analysisResult={analysisResult}
-            skincareGoals={skincareGoals}
+            haircareGoals={haircareGoals}
           />
         );
-       case 6:
+      case 7:
         return (
             <ChatbotPage
                 analysisResult={analysisResult}
-                skincareGoals={skincareGoals}
+                haircareGoals={haircareGoals}
                 recommendation={recommendation}
                 chatHistory={chatHistory}
                 setChatHistory={setChatHistory}
@@ -181,36 +192,39 @@ const App: React.FC = () => {
   const totalCartItems = cart.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <div className="w-full h-screen overflow-hidden lg:grid lg:grid-cols-[350px,1fr] bg-brand-bg">
-       {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/60 z-40 lg:hidden" 
-          onClick={() => setIsSidebarOpen(false)}
-          aria-hidden="true"
-        ></div>
-      )}
-      <Sidebar 
-        currentStep={step} 
-        onReset={resetState} 
-        onCartClick={() => setIsCartOpen(true)} 
-        cartItemCount={totalCartItems}
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-      />
-      <div className="w-full h-full flex flex-col">
-        <Header 
-            onReset={resetState} 
-            onCartClick={() => setIsCartOpen(true)} 
-            cartItemCount={totalCartItems} 
-            onMenuClick={() => setIsSidebarOpen(true)}
+    <div className="w-full min-h-screen flex flex-col">
+        {/* Mobile Header */}
+        <Header
+            onMenuClick={() => setIsMobileMenuOpen(true)}
+            cartItemCount={totalCartItems}
+            onCartClick={() => setIsCartOpen(true)}
+            className="lg:hidden"
         />
-        <main className="flex-1 px-1 sm:px-2 pt-1 sm:pt-2 pb-16 sm:pb-20 min-h-0">
-            <div className="bg-brand-surface rounded-2xl shadow-lifted p-2 sm:p-4 h-full flex flex-col border-t-4 border-brand-primary">
-              {renderStep()}
-            </div>
+        {/* Desktop Header */}
+        <TopHeader
+            cartItemCount={totalCartItems}
+            onCartClick={() => setIsCartOpen(true)}
+            className="hidden lg:flex mx-auto mt-8"
+        />
+      <div className="w-full max-w-screen-2xl mx-auto flex-grow grid grid-cols-1 lg:grid-cols-[300px_1fr] lg:gap-8 lg:mt-8">
+        <div className="hidden lg:block">
+            <Sidebar
+                currentStep={step}
+                onReset={resetState}
+            />
+        </div>
+        <main className="flex flex-col h-full">
+            {renderStep()}
         </main>
       </div>
-       <CartDrawer
+
+       <Step1PastProducts
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        currentStep={step}
+        onReset={resetState}
+      />
+      <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cartItems={cart}

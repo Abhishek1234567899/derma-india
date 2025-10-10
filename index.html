@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Skincare Advisor</title>
+    <title>AI Haircare Advisor</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -17,17 +17,18 @@
             },
             colors: {
               'brand-primary': {
-                DEFAULT: '#2563eb', // blue-600
-                hover: '#1d4ed8',   // blue-700
-                light: '#3b82f6',   // blue-500
+                DEFAULT: '#3b82f6', // blue-500
+                hover: '#2563eb',   // blue-600
+                light: '#60a5fa',   // blue-400
               },
               'brand-secondary': '#db2777', // pink-600
               'brand-text-main': '#1e293b', // slate-800
               'brand-text-muted': '#64748b', // slate-500
-              'brand-text-inverted': '#cbd5e1', // slate-300
-              'brand-bg': '#f1f5f9', // slate-100 - Changed to light gray
+              'brand-text-inverted': '#f8fafc', // slate-50
+              'brand-bg': '#f1f5f9', // slate-100
               'brand-surface': '#ffffff', // white
               'brand-dark': '#0f172a', // slate-900
+              'brand-input-bg': '#1e293b', // slate-800 - For dark inputs
             },
             boxShadow: {
               'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
@@ -42,13 +43,9 @@
                 '0%': { opacity: '0', transform: 'translateY(10px) scale(0.98)' },
                 '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
               },
-              'aurora': {
-                'from': { backgroundPosition: '50% 50%, 50% 50%' },
-                'to': { backgroundPosition: '350% 50%, 350% 50%' }
-              },
-              'pulse-glow': {
-                '0%, 100%': { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.7)' },
-                '50%': { transform: 'scale(1.05)', boxShadow: '0 0 0 10px rgba(59, 130, 246, 0)' }
+               'pulse-glow': {
+                '0%, 100%': { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(37, 99, 235, 0.4)' },
+                '50%': { transform: 'scale(1.02)', boxShadow: '0 0 0 10px rgba(37, 99, 235, 0)' }
               },
               'scan-line': {
                 '0%, 100%': { top: '-10%' },
@@ -61,18 +58,29 @@
             },
             animation: {
               'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
-              'aurora': 'aurora 60s linear infinite',
               'pulse-glow': 'pulse-glow 2s infinite cubic-bezier(0.4, 0, 0.6, 1)',
               'scan-line': 'scan-line 2.5s ease-in-out infinite',
               'pulse-soft-blue': 'pulse-soft-blue 2s infinite ease-in-out',
             },
-            backgroundImage: {
-              'aurora-gradient': "radial-gradient(125% 125% at 50% 10%, #0f172a 40%, #2563eb 100%)",
-            }
           }
         }
       }
     </script>
+    <style>
+      .custom-select-options option {
+        background: white;
+        color: #1e293b;
+      }
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+      }
+    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script type="importmap">
@@ -86,7 +94,7 @@
 }
 </script>
 </head>
-  <body class="bg-brand-bg font-sans text-brand-text-main">
+  <body class="bg-white lg:bg-slate-100 font-sans text-brand-text-main">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

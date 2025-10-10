@@ -1,97 +1,82 @@
 import React from 'react';
-import { StepIndicator } from './StepIndicator';
-import { CompanyLogo, RefreshCw, ShoppingCartIcon, X, ExternalLinkIcon } from './Icons';
+import { RefreshCw, CheckIcon } from './Icons';
 import Button from './common/Button';
 
 interface SidebarProps {
   currentStep: number;
   onReset: () => void;
-  onCartClick: () => void;
-  cartItemCount: number;
-  isOpen: boolean;
-  onClose: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({
-  currentStep,
-  onReset,
-  onCartClick,
-  cartItemCount,
-  isOpen,
-  onClose
-}) => {
+const steps = [
+  { id: 1, name: 'Start', description: 'Tell me a bit about yourself!' },
+  { id: 2, name: 'Health Questionnaire', description: 'Complete a health questionnaire.' },
+  { id: 3, name: 'Hair & Scalp Analysis', description: 'Upload photos for AI analysis.' },
+  { id: 4, name: 'Your Goals', description: 'Select your desired outcomes.' },
+  { id: 5, name: 'Your Plan', description: 'Receive your personalized routine.' },
+  { id: 6, name: "Doctor's Report", description: 'Review a summary of your results.' },
+  { id: 7, name: 'AI Assistant', description: 'Ask questions about your plan.' },
+];
+
+const Sidebar: React.FC<SidebarProps> = ({ currentStep, onReset }) => {
   return (
-    <aside className={`
-      bg-slate-100 border-r border-slate-200/80 flex flex-col
-      fixed inset-y-0 left-0 z-50 w-[350px] transition-transform duration-300 ease-in-out
-      ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-      lg:relative lg:translate-x-0 lg:w-full
-    `}>
-      {/* Scrollable content */}
-      <div className="relative z-10 flex-1 overflow-y-auto p-8">
-        {/* Top Section */}
-        <div className="mb-12 flex items-center justify-between">
-          <a href="https://dermatics.in" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
-            <CompanyLogo className="w-28 h-auto" />
-          </a>
-          <div className="flex items-center gap-2">
-            <a href="https://dermatics.in" target="_blank" rel="noopener noreferrer" title="Visit Dermatics.in" className="p-2 rounded-full hover:bg-slate-200 transition-colors">
-              <ExternalLinkIcon className="w-6 h-6 text-slate-600" />
-            </a>
-            <button onClick={onCartClick} className="relative p-2 rounded-full hover:bg-slate-200 transition-colors">
-              <ShoppingCartIcon className="w-6 h-6 text-slate-600" />
-              {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-brand-secondary text-xs font-bold text-white shadow-lg">
-                  {cartItemCount}
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
+    <aside className="bg-white p-6 rounded-2xl shadow-lg flex flex-col h-full">
+       <div className="flex-1">
+        <ol className="relative">
+          {steps.map((step, stepIdx) => {
+            const isCurrent = currentStep === step.id;
+            const isCompleted = currentStep > step.id;
 
-        <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-800 mb-2 leading-tight">
-          AI Skincare Advisor
-        </h1>
-        <p className="text-xs sm:text-sm text-slate-500 mb-10 sm:mb-12">
-          Your personalized path to healthier skin, powered by Gemini.
-        </p>
+            let circleClass = 'border-slate-300 bg-white';
+            if (isCurrent) circleClass = 'border-brand-primary bg-brand-primary';
+            if (isCompleted) circleClass = 'border-brand-primary bg-brand-primary';
+            
+            let lineClass = 'border-slate-200';
+            if (isCompleted) lineClass = 'border-brand-primary';
 
-        {/* Step Indicator */}
-        <div className="mb-8">
-          <StepIndicator currentStep={currentStep} />
-        </div>
 
-        {/* Start Over Button */}
-        <div className="space-y-4">
-          <Button
-            onClick={onReset}
-            variant="primary"
-            size="sm"
-            className="w-full gap-2"
-          >
+            return (
+              <li key={step.name} className="pb-10 last:pb-0 relative">
+                <div className="flex items-start">
+                  <div className="flex flex-col items-center mr-4">
+                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors duration-300 ${circleClass}`}>
+                      {isCompleted ? (
+                         <CheckIcon className="w-4 h-4 text-white" />
+                      ) : isCurrent ? (
+                         <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
+                      ) : null}
+                    </div>
+                  </div>
+                  <div className="pt-0 -mt-1">
+                    <p className={`font-bold text-sm transition-colors duration-300 ${isCurrent ? 'text-brand-primary' : 'text-slate-800'}`}>{step.name}</p>
+                    <p className="text-xs text-slate-500">{step.description}</p>
+                    {isCompleted ? (
+                       <span className="mt-1 inline-flex items-center rounded-md bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-800">
+                        Completed
+                      </span>
+                    ) : isCurrent ? (
+                      <span className="mt-1 inline-flex items-center rounded-md bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-800">
+                        In Progress
+                      </span>
+                    ) : (
+                      <span className="mt-1 inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-500">
+                        Pending
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {stepIdx !== steps.length - 1 && (
+                  <div className={`absolute top-8 left-[11px] h-full w-px border-l-2 border-dashed transition-colors duration-300 ${lineClass}`}></div>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+      <div className="mt-auto">
+        <Button onClick={onReset} variant="primary" size="md" className="w-full gap-2 bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
             <RefreshCw className="w-4 h-4" />
             Start Over
-          </Button>
-
-          {/* Footer */}
-          <footer className="text-center text-xs text-slate-500 font-medium pt-4">
-            <p>
-              Powered by Google Gemini. For informational purposes only.
-              Always consult a dermatologist for medical advice.
-            </p>
-          </footer>
-        </div>
-      </div>
-
-      {/* Sticky bottom nav — Close button like YouTube */}
-      <div className="relative z-10 p-4 border-t border-slate-200 lg:hidden">
-        <button
-          onClick={onClose}
-          className="p-2 rounded-full hover:bg-slate-200 transition-colors"
-          aria-label="Close menu"
-        >
-          <X className="w-6 h-6 text-slate-600" />
-        </button>
+        </Button>
       </div>
     </aside>
   );

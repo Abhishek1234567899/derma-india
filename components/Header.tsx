@@ -1,50 +1,33 @@
 import React from 'react';
-import { CompanyLogo, RefreshCw, ShoppingCartIcon, MenuIcon, ExternalLinkIcon } from './Icons';
-import Button from './common/Button';
+import { ShoppingCartIcon, MenuIcon } from './Icons';
 
 interface HeaderProps {
-    onReset: () => void;
+    onMenuClick: () => void;
     onCartClick: () => void;
     cartItemCount: number;
-    onMenuClick: () => void;
+    className?: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ onReset, onCartClick, cartItemCount, onMenuClick }) => {
+const Header: React.FC<HeaderProps> = ({ onMenuClick, onCartClick, cartItemCount, className = '' }) => {
   return (
-    <header className="w-full mx-auto p-4 flex items-center justify-between lg:hidden fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md z-20 border-b border-slate-200">
-      <div className="flex items-center gap-2">
-        <button onClick={onMenuClick} className="p-2 -ml-2 rounded-full hover:bg-black/10 transition-colors" aria-label="Open menu">
-          <MenuIcon className="w-6 h-6 text-brand-text-muted" />
+    <header className={`w-full p-4 flex items-center justify-between bg-white/80 backdrop-blur-sm shadow-soft sticky top-0 z-30 border-b border-slate-200/80 ${className}`}>
+      <div className="flex-1">
+        <button onClick={onMenuClick} className="bg-brand-primary text-white p-3 rounded-xl hover:bg-brand-primary-hover transition-colors" aria-label="Open menu">
+          <MenuIcon className="w-5 h-5" />
         </button>
-        <a href="https://dermatics.in" target="_blank" rel="noopener noreferrer">
-          <CompanyLogo className="w-24 h-auto" />
+      </div>
+      <div className="flex-1 flex justify-center">
+         <a href="https://dermatics.in" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
+           <img src="https://dermatics.in/cdn/shop/files/Dermatics_Logo_-_Copy_1.png?v=1614318698" alt="Dermatics India Logo" className="h-8 w-auto" />
         </a>
       </div>
-      <div className="flex items-center gap-2">
-        <Button onClick={onReset} variant="secondary" size="sm" className="gap-1.5 px-3">
-            <RefreshCw className="w-4 h-4" />
-            Reset
-        </Button>
-         <Button
-            as="a"
-            href="https://dermatics.in"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Visit Dermatics.in"
-            variant="secondary"
-            size="sm"
-            className="relative !rounded-full !p-2"
-        >
-            <ExternalLinkIcon className="w-6 h-6" />
-        </Button>
-         <Button onClick={onCartClick} variant="secondary" size="sm" className="relative !rounded-full !p-2">
-            <ShoppingCartIcon className="w-6 h-6" />
+      <div className="flex-1 flex justify-end">
+        <button onClick={onCartClick} className="relative bg-brand-primary text-white p-3 rounded-xl hover:bg-brand-primary-hover transition-colors" aria-label="Open cart">
+            <ShoppingCartIcon className="w-5 h-5" />
             {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-brand-secondary text-xs font-bold text-white shadow-lg">
-                    {cartItemCount}
-                </span>
+                <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center h-5 w-5 rounded-full bg-red-500 text-white text-[10px] font-bold ring-2 ring-white">{cartItemCount > 9 ? '9+' : cartItemCount}</span>
             )}
-        </Button>
+        </button>
       </div>
     </header>
   );
