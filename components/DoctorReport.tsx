@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { SkincareRoutine, FaceImage, SkinConditionCategory } from '../types';
 import Button from './common/Button';
@@ -77,11 +78,11 @@ const DoctorReport: React.FC<DoctorReportProps> = ({
   };
 
 
-  if (!recommendation || !analysisResult) {
+  if (!recommendation) {
     return (
         <div className="text-center p-8 bg-white rounded-lg shadow-xl border border-slate-200">
             <h2 className="text-2xl font-bold text-slate-800 mb-4">Report Data Missing</h2>
-            <p className="text-slate-600">We couldn't find the necessary analysis or recommendation data. Please go back and complete the previous steps.</p>
+            <p className="text-slate-600">We couldn't find the necessary recommendation data. Please go back and complete the previous steps.</p>
             <Button onClick={onBack} variant="primary" size="lg" className="mt-6 gap-2">
               <ArrowLeftIcon className="w-5 h-5"/>
               Go Back
@@ -121,31 +122,33 @@ const DoctorReport: React.FC<DoctorReportProps> = ({
               <p className="text-xs text-slate-400 mt-1">Generated on: {new Date().toLocaleDateString()}</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="md:col-span-2">
-                  <h3 className="text-lg font-semibold text-slate-700 mb-3 border-b pb-2">AI Hair & Scalp Analysis Findings</h3>
-                  {analysisResult.map(category => {
-                      const style = getCategoryStyle(category.category);
-                      const Icon = style.icon;
-                      return (
-                          <div key={category.category} className="mb-3">
-                              <h4 className={`font-bold text-base flex items-center gap-2 ${style.tailwind.text}`}>
-                                  <Icon className={`w-5 h-5 ${style.tailwind.icon}`} />
-                                  {category.category}
-                              </h4>
-                              <ul className="list-disc list-inside pl-2 text-sm text-slate-600">
-                                  {category.conditions.map(c => <li key={c.name}>{c.name} ({c.location})</li>)}
-                              </ul>
-                          </div>
-                      );
-                  })}
-              </div>
-              {primaryImage && (
-                  <div className="flex justify-center items-start">
-                      <img src={primaryImage} alt="Your Hair/Scalp" className="rounded-lg shadow-md max-h-48 border"/>
+              {analysisResult && analysisResult.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="md:col-span-2">
+                      <h3 className="text-lg font-semibold text-slate-700 mb-3 border-b pb-2">AI Hair & Scalp Analysis Findings</h3>
+                      {analysisResult.map(category => {
+                          const style = getCategoryStyle(category.category);
+                          const Icon = style.icon;
+                          return (
+                              <div key={category.category} className="mb-3">
+                                  <h4 className={`font-bold text-base flex items-center gap-2 ${style.tailwind.text}`}>
+                                      <Icon className={`w-5 h-5 ${style.tailwind.icon}`} />
+                                      {category.category}
+                                  </h4>
+                                  <ul className="list-disc list-inside pl-2 text-sm text-slate-600">
+                                      {category.conditions.map(c => <li key={c.name}>{c.name} ({c.location})</li>)}
+                                  </ul>
+                              </div>
+                          );
+                      })}
                   </div>
+                  {primaryImage && (
+                      <div className="flex justify-center items-start">
+                          <img src={primaryImage} alt="Your Hair/Scalp" className="rounded-lg shadow-md max-h-48 border"/>
+                      </div>
+                  )}
+                </div>
               )}
-              </div>
               
               <div>
               <h3 className="text-lg font-semibold text-slate-700 mb-3 border-b pb-2">Your Haircare Goals</h3>

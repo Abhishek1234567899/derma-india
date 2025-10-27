@@ -58,14 +58,29 @@ const fileToGenerativePart = async (file: File) => {
     };
 };
 
-export const analyzeImage = async (images: File[]): Promise<SkinConditionCategory[]> => {
+export interface AnalysisResponse {
+    analysis: SkinConditionCategory[] | null;
+    error?: 'irrelevant_image' | string | null;
+    message?: string | null;
+}
+
+export const analyzeImage = async (images: File[]): Promise<AnalysisResponse> => {
     if (images.length === 0) {
         throw new Error("No images provided for analysis.");
     }
     try {
         const imageParts = await Promise.all(images.map(fileToGenerativePart));
         const textPart = {
-             text: `You are an expert AI trichologist. Analyze these images of a person's hair and scalp in detail. The images may show different angles (e.g., front/hairline, top/crown, temples, back). Provide one single, consolidated analysis based on all images provided.
+             text: `You are an expert AI trichologist. Your primary task is to analyze images of a person's hair and scalp.
+
+**Step 1: Image Validity Check**
+First, determine if the uploaded image(s) are relevant for a hair and scalp analysis. A relevant image must clearly show a human head, hair, or scalp. Images of objects (like flowers), animals, landscapes, or other body parts are not relevant.
+
+- If the image(s) ARE NOT RELEVANT, you MUST return a JSON object with an "error" field set to "irrelevant_image" and a user-friendly "message" explaining the issue. The "analysis" field should be null.
+- If the image(s) ARE RELEVANT, proceed to Step 2. The "error" and "message" fields should be null, and the "analysis" field should contain your findings.
+
+**Step 2: Detailed Analysis (only if images are relevant)**
+Analyze these relevant images in detail. The images may show different angles (e.g., front/hairline, top/crown, temples, back). Provide one single, consolidated analysis based on all images provided.
 
 Your task is to identify all potential conditions and characteristics from the comprehensive list below.
 
@@ -115,46 +130,62 @@ Provide the output strictly in JSON format according to the provided schema. Be 
             config: {
                 responseMimeType: "application/json",
                 responseSchema: {
-                    type: Type.ARRAY,
-                    items: {
-                        type: Type.OBJECT,
-                        properties: {
-                            category: { type: Type.STRING, description: "The category of hair/scalp conditions, e.g., 'Pattern Hair Loss'." },
-                            conditions: {
-                                type: Type.ARRAY,
-                                items: {
-                                    type: Type.OBJECT,
-                                    properties: {
-                                        name: { type: Type.STRING, description: "The specific hair/scalp condition name, e.g., 'Androgenetic Alopecia'." },
-                                        confidence: { type: Type.NUMBER, description: "The confidence score from 0 to 100." },
-                                        location: { type: Type.STRING, description: "The primary scalp location of the condition, e.g., 'Crown'." },
-                                        boundingBoxes: {
-                                            type: Type.ARRAY,
-                                            description: "Array of bounding boxes for this condition.",
-                                            items: {
-                                                type: Type.OBJECT,
-                                                properties: {
-                                                    imageId: { type: Type.NUMBER, description: "0-based index of the image this box applies to." },
-                                                    box: {
+                    type: Type.OBJECT,
+                    properties: {
+                        analysis: {
+                            type: Type.ARRAY,
+                            nullable: true,
+                            items: {
+                                type: Type.OBJECT,
+                                properties: {
+                                    category: { type: Type.STRING, description: "The category of hair/scalp conditions, e.g., 'Pattern Hair Loss'." },
+                                    conditions: {
+                                        type: Type.ARRAY,
+                                        items: {
+                                            type: Type.OBJECT,
+                                            properties: {
+                                                name: { type: Type.STRING, description: "The specific hair/scalp condition name, e.g., 'Androgenetic Alopecia'." },
+                                                confidence: { type: Type.NUMBER, description: "The confidence score from 0 to 100." },
+                                                location: { type: Type.STRING, description: "The primary scalp location of the condition, e.g., 'Crown'." },
+                                                boundingBoxes: {
+                                                    type: Type.ARRAY,
+                                                    description: "Array of bounding boxes for this condition.",
+                                                    items: {
                                                         type: Type.OBJECT,
                                                         properties: {
-                                                            x1: { type: Type.NUMBER, description: "Normalized top-left x coordinate." },
-                                                            y1: { type: Type.NUMBER, description: "Normalized top-left y coordinate." },
-                                                            x2: { type: Type.NUMBER, description: "Normalized bottom-right x coordinate." },
-                                                            y2: { type: Type.NUMBER, description: "Normalized bottom-right y coordinate." }
+                                                            imageId: { type: Type.NUMBER, description: "0-based index of the image this box applies to." },
+                                                            box: {
+                                                                type: Type.OBJECT,
+                                                                properties: {
+                                                                    x1: { type: Type.NUMBER, description: "Normalized top-left x coordinate." },
+                                                                    y1: { type: Type.NUMBER, description: "Normalized top-left y coordinate." },
+                                                                    x2: { type: Type.NUMBER, description: "Normalized bottom-right x coordinate." },
+                                                                    y2: { type: Type.NUMBER, description: "Normalized bottom-right y coordinate." }
+                                                                },
+                                                                required: ["x1", "y1", "x2", "y2"]
+                                                            }
                                                         },
-                                                        required: ["x1", "y1", "x2", "y2"]
+                                                        required: ["imageId", "box"]
                                                     }
-                                                },
-                                                required: ["imageId", "box"]
-                                            }
+                                                }
+                                            },
+                                            required: ["name", "confidence", "location", "boundingBoxes"]
                                         }
-                                    },
-                                    required: ["name", "confidence", "location", "boundingBoxes"]
-                                }
+                                    }
+                                },
+                                required: ["category", "conditions"]
                             }
                         },
-                        required: ["category", "conditions"]
+                        error: {
+                            type: Type.STRING,
+                            nullable: true,
+                            description: "An error code like 'irrelevant_image' if the image is not valid."
+                        },
+                        message: {
+                            type: Type.STRING,
+                            nullable: true,
+                            description: "An error message if the image is not valid."
+                        }
                     }
                 }
             }
@@ -203,11 +234,11 @@ export const generateRoutine = async (
 
         **User Data:**
         - **User Hair Profile (from questionnaire):** ${JSON.stringify(hairProfile, null, 2)}
-        - **AI Hair & Scalp Analysis Results:** ${analysisString}
+        - **AI Hair & Scalp Analysis Results:** ${analysisString || 'Not provided. Base your recommendations solely on the questionnaire.'}
         - **Primary Haircare Goals:** ${goalsString}
 
         **Instructions:**
-        1.  **Analyze and Select:** Carefully review the user's hair profile, AI analysis, and goals. From the "Dermatics India Product Catalog", select the MOST appropriate products to build a cohesive AM and PM routine. For hair, this might be simplified to "Wash Day" and "Non-Wash Day" or just a single routine. Use your expert judgment. Pay close attention to the 'suitableFor' and 'keyIngredients' tags in the product data to match products to the user's hair conditions.
+        1.  **Analyze and Select:** Carefully review all available user data. If "AI Hair & Scalp Analysis Results" are provided, use them as a primary source for understanding the user's conditions. If analysis results are not provided, you MUST rely entirely on the "User Hair Profile (from questionnaire)" to infer the user's conditions and needs. From the "Dermatics India Product Catalog", select the MOST appropriate products to build a cohesive AM and PM routine. For hair, this might be simplified to "Wash Day" and "Non-Wash Day" or just a single routine. Use your expert judgment. Pay close attention to the 'suitableFor' and 'keyIngredients' tags in the product data to match products to the user's hair conditions.
         2.  **Create the Routine:** Construct a step-by-step AM (morning) and PM (evening) routine. For each step, you must provide:
             - \`stepType\`: A single, descriptive word for the routine step (e.g., "Shampoo", "Conditioner", "Serum", "Mask", "Leave-in").
             - \`productId\`, \`variantId\`, \`productName\`, \`productUrl\`, \`productImageUrl\`, \`price\`, \`originalPrice\`: All taken directly from the catalog for the selected product.

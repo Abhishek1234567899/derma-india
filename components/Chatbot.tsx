@@ -38,10 +38,13 @@ const Chatbot: React.FC<ChatbotProps> = ({ analysisResult, haircareGoals, recomm
   }, [chatHistory.length, setChatHistory]);
   
   const getSystemInstruction = useCallback(() => {
-     if (!analysisResult || !recommendation) return '';
-    const analysisString = analysisResult.map(cat => 
-        `${cat.category}: ${cat.conditions.map(c => `${c.name} at ${c.location} (${c.confidence}% confidence)`).join(', ')}`
-    ).join('; ');
+     if (!recommendation) return '';
+    const analysisString = analysisResult && analysisResult.length > 0
+        ? analysisResult.map(cat => 
+            `${cat.category}: ${cat.conditions.map(c => `${c.name} at ${c.location} (${c.confidence}% confidence)`).join(', ')}`
+        ).join('; ')
+        : 'Not provided by user.';
+
     const goalsString = haircareGoals.join(', ');
     const recommendationString = `
     Introduction: ${recommendation.introduction}

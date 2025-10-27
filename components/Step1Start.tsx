@@ -1,83 +1,102 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { HairProfileData } from '../types';
+import Input from './common/Input';
+import Button from './common/Button';
+import { ArrowRightIcon } from './Icons';
+import Select from './common/Select';
 
 interface Step1StartProps {
   onNext: () => void;
   setHairProfileData: React.Dispatch<React.SetStateAction<Partial<HairProfileData>>>;
+  hairProfileData: Partial<HairProfileData>;
 }
 
-const Step1Start: React.FC<Step1StartProps> = ({ onNext, setHairProfileData }) => {
-  const [gender, setGender] = useState<string | null>(null);
+const ageRanges = ["12 - 17 old", "18 - 24 old", "25 - 34 old", "35 - 54 old", "55 - 64 old", "65 - Older"];
 
-  useEffect(() => {
-    if (gender) {
-      setHairProfileData(prev => ({ ...prev, gender }));
-      // Removed timeout for instant navigation
+const Step1Start: React.FC<Step1StartProps> = ({ onNext, setHairProfileData, hairProfileData }) => {
+  const [name, setName] = useState(hairProfileData.name || '');
+  const [email, setEmail] = useState(hairProfileData.email || '');
+  const [phone, setPhone] = useState(hairProfileData.phone || '');
+  const [age, setAge] = useState(hairProfileData.age || '');
+
+  const isFormValid = name.trim() !== '' && email.trim() !== '' && age !== '';
+
+  const handleNext = () => {
+    if (isFormValid) {
+      setHairProfileData(prev => ({ ...prev, name, email, phone, age }));
       onNext();
     }
-  }, [gender, onNext, setHairProfileData]);
-
-  const handleSelect = (selectedGender: 'Male' | 'Female') => {
-    setGender(selectedGender);
   };
 
   return (
-    <div className="animate-fade-in-up flex flex-col w-full h-full items-center justify-center p-4">
-        <div className="text-center mb-8">
-            <h2 className="text-lg font-medium text-slate-600">Please select a concern to begin.</h2>
+    <div className="animate-fade-in-up flex flex-col w-full h-full bg-white rounded-2xl border-2 border-slate-300">
+      <div className="flex-grow overflow-y-auto p-6 sm:p-8 lg:p-10">
+        <div>
+          <h2 className="text-3xl font-bold text-slate-900">Let's Begin!</h2>
+          <p className="text-base text-slate-600 mt-1">Let's start with a little about you!</p>
         </div>
-      <div className="w-full max-w-md lg:max-w-lg mx-auto">
-        <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 justify-center">
-          {/* Male Card */}
-          <div
-            onClick={() => handleSelect('Male')}
-            className={`
-              rounded-2xl p-4 cursor-pointer transition-all duration-300 w-full sm:w-60
-              border-2 
-              ${gender === 'Male'
-                ? 'border-blue-500 bg-white shadow-interactive-hover scale-105'
-                : 'border-slate-300 bg-white hover:border-blue-400 hover:shadow-lifted'
-              }
-            `}
-          >
-            <div className="relative flex flex-col items-center">
-              <div className="absolute top-2 left-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300
-                ${gender === 'Male' ? 'border-blue-500 bg-white' : 'border-slate-400 bg-white'}
-              ">
-                {gender === 'Male' && <div className="w-3 h-3 bg-blue-500 rounded-full"></div>}
-              </div>
-              <div className="w-36 h-36 my-2">
-                  <img src="/male-illustration.png" alt="Male illustration" className="w-full h-full object-contain" />
-              </div>
-              <h3 className="text-base font-bold text-slate-800">Male</h3>
-            </div>
-          </div>
 
-          {/* Female Card */}
-          <div
-            onClick={() => handleSelect('Female')}
-            className={`
-              rounded-2xl p-4 cursor-pointer transition-all duration-300 w-full sm:w-60
-              border-2 
-              ${gender === 'Female'
-                ? 'border-blue-500 bg-white shadow-interactive-hover scale-105'
-                : 'border-slate-300 bg-white hover:border-blue-400 hover:shadow-lifted'
-              }
-            `}
-          >
-            <div className="relative flex flex-col items-center">
-              <div className="absolute top-2 left-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300
-                ${gender === 'Female' ? 'border-blue-500 bg-white' : 'border-slate-400 bg-white'}
-              ">
-                {gender === 'Female' && <div className="w-3 h-3 bg-blue-500 rounded-full"></div>}
-              </div>
-              <div className="w-36 h-36 my-2">
-                  <img src="/female-illustration.png" alt="Female illustration" className="w-full h-full object-contain" />
-              </div>
-              <h3 className="text-base font-bold text-slate-800">Female</h3>
-            </div>
+        <div className="mt-8 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Input
+              id="name"
+              label="What's your name?*"
+              placeholder="Your Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              autoComplete="name"
+            />
+            <Select
+              id="age"
+              label="How old are you?*"
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+              required
+            >
+              <option value="" disabled>Select an age range</option>
+              {ageRanges.map((ageRange) => (
+                <option key={ageRange} value={ageRange}>
+                  {ageRange}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Input
+              id="email"
+              label="Email*"
+              type="email"
+              placeholder="Your Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+            />
+            <Input
+              id="phone"
+              label="Phone"
+              type="tel"
+              placeholder="Mobile Number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              autoComplete="tel"
+            />
           </div>
         </div>
+      </div>
+      <div className="flex-shrink-0 flex justify-between items-center p-6 border-t border-slate-200">
+        <Button variant="ghost" size="md" className="gap-2" disabled>
+          &larr; Previous
+        </Button>
+        <Button
+          onClick={handleNext}
+          disabled={!isFormValid}
+          size="md"
+          className="gap-2 bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+        >
+          Next <ArrowRightIcon className="w-4 h-4" />
+        </Button>
       </div>
     </div>
   );

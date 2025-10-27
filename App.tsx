@@ -2,6 +2,7 @@
 import React, { useState, useCallback } from 'react';
 import { HairProfileData, SkincareRoutine, ChatMessage, FaceImage, CartItem, RoutineStep, AlternativeProduct, SkinConditionCategory } from './types';
 import Step1Start from './components/Step1Start';
+import Step2UserInfo from './components/Step2UserInfo';
 import Step2HealthQuestionnaire from './components/Step1HairQuestionnaire';
 import Step3HairAnalysis from './components/Step2HairAnalysis';
 import Step4Goals from './components/Step3Goals';
@@ -105,9 +106,19 @@ const App: React.FC = () => {
             <Step1Start
                 onNext={handleNextStep}
                 setHairProfileData={setHairProfileData}
+                hairProfileData={hairProfileData}
             />
         );
       case 2:
+        return (
+            <Step2UserInfo
+                onNext={handleNextStep}
+                onBack={handlePrevStep}
+                hairProfileData={hairProfileData}
+                setHairProfileData={setHairProfileData}
+            />
+        );
+      case 3:
         return (
           <Step2HealthQuestionnaire
             onNext={handleNextStep}
@@ -116,7 +127,7 @@ const App: React.FC = () => {
             setHairProfileData={setHairProfileData}
           />
         );
-      case 3:
+      case 4:
         return (
           <Step3HairAnalysis
             onNext={handleNextStep}
@@ -129,7 +140,7 @@ const App: React.FC = () => {
             isLoading={isLoading}
           />
         );
-      case 4:
+      case 5:
         return (
           <Step4Goals
             onBack={handlePrevStep}
@@ -144,7 +155,7 @@ const App: React.FC = () => {
             isLoading={isLoading}
           />
         );
-      case 5:
+      case 6:
         return (
           <Step5YourPlan
             recommendation={recommendation}
@@ -159,7 +170,7 @@ const App: React.FC = () => {
             onBulkAddToCart={handleBulkAddToCart}
           />
         );
-      case 6:
+      case 7:
         return (
           <Step6DoctorReport
             recommendation={recommendation}
@@ -172,7 +183,7 @@ const App: React.FC = () => {
             haircareGoals={haircareGoals}
           />
         );
-      case 7:
+      case 8:
         return (
             <ChatbotPage
                 analysisResult={analysisResult}

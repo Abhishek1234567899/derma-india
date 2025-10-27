@@ -3,7 +3,7 @@ import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { SkinConditionCategory, FaceImage } from '../types';
 import Button from './common/Button';
 import { analyzeImage } from '../services/geminiService';
-import { UploadCloud, CheckCircle, X, CameraIcon, TriangleAlertIcon, ArrowLeftIcon, ArrowRightIcon, Plus } from './Icons';
+import { UploadCloud, CheckCircle, X, CameraIcon, TriangleAlertIcon, ArrowLeftIcon, ArrowRightIcon, Plus, SparklesIcon } from './Icons';
 import CameraCapture from './CameraCapture';
 import { getCategoryStyle } from '../constants';
 import Card from './common/Card';
@@ -19,7 +19,6 @@ interface Step3HairAnalysisProps {
   isLoading: boolean;
 }
 
-// FIX: Renamed component from Step2HairAnalysis to Step3HairAnalysis to match its usage in App.tsx.
 const Step3HairAnalysis: React.FC<Step3HairAnalysisProps> = ({
   onNext, onBack, faceImages, setFaceImages, analysisResult, setAnalysisResult, setIsLoading, isLoading,
 }) => {
@@ -141,8 +140,13 @@ const Step3HairAnalysis: React.FC<Step3HairAnalysisProps> = ({
     setHoveredCondition(null);
     try {
       const filesToAnalyze = faceImages.map(img => img.file);
-      const result = await analyzeImage(filesToAnalyze);
-      setAnalysisResult(result);
+      const response = await analyzeImage(filesToAnalyze);
+      if (response.error) {
+        alert(response.message || "The uploaded image is not valid. Please upload a clear photo of your hair or scalp.");
+        setAnalysisResult(null);
+      } else {
+        setAnalysisResult(response.analysis);
+      }
     } catch (error) {
       alert((error as Error).message);
     } finally {
@@ -158,7 +162,19 @@ const Step3HairAnalysis: React.FC<Step3HairAnalysisProps> = ({
             <h2 className="text-2xl font-bold text-brand-text-main mb-2">
                 Hair & Scalp Analysis
             </h2>
-            <p className="text-brand-text-muted mt-1 mb-6">Upload photos for AI analysis.</p>
+            <p className="text-brand-text-muted mt-1 mb-6">Upload photos for our AI to analyze, or skip to continue.</p>
+
+            {faceImages.length === 0 && !analysisResult && (
+              <div className="rounded-lg bg-blue-50 p-4 text-sm text-blue-800 border border-blue-200 mb-8 flex items-start gap-3" role="status">
+                <SparklesIcon className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold">Photo upload is optional</p>
+                  <p className="leading-relaxed mt-1">
+                      No photo? No problem. We can generate a personalized plan based on your questionnaire answers. Simply use the "Skip & Continue" button below to proceed.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {analysisResult ? (
               // POST-ANALYSIS VIEW
@@ -348,10 +364,25 @@ const Step3HairAnalysis: React.FC<Step3HairAnalysisProps> = ({
             <ArrowLeftIcon className="w-4 h-4" />
             Previous
           </Button>
-          <Button onClick={onNext} disabled={!analysisResult} size="md" className="gap-2 bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
-            Next
-            <ArrowRightIcon className="w-4 h-4" />
-          </Button>
+          {analysisResult ? (
+            <Button onClick={onNext} size="md" className="gap-2 bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
+              Next
+              <ArrowRightIcon className="w-4 h-4" />
+            </Button>
+          ) : (
+             <Button 
+                onClick={() => {
+                    setAnalysisResult(null); // Ensure analysis is cleared before proceeding
+                    onNext();
+                }} 
+                variant="secondary" 
+                size="md" 
+                className="gap-2"
+            >
+              Skip & Continue
+              <ArrowRightIcon className="w-4 h-4" />
+            </Button>
+          )}
         </div>
         {isCameraOpen && <CameraCapture onCapture={handlePhotoCapture} onClose={() => setIsCameraOpen(false)} />}
     </div>

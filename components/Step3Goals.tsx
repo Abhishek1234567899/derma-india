@@ -1,3 +1,4 @@
+
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { HairProfileData, SkinConditionCategory, SkincareRoutine } from '../types';
 import Button from './common/Button';
@@ -159,18 +160,13 @@ const Step3Goals: React.FC<Step3Props> = ({
         return HAIRCARE_GOALS.find(g => g.id === id)?.label || null;
       })
       .filter((g): g is string => !!g);
-
-    if (!analysisResult) {
-        alert("Analysis results are missing. Please go back a step.");
-        return;
-    }
     
     setIsLoading(true);
     try {
-      const { recommendation, title } = await generateRoutine(pastProducts, analysisResult, goalsForApi);
+      const { recommendation, title } = await generateRoutine(pastProducts, analysisResult || [], goalsForApi);
       setRecommendation(recommendation);
       setRoutineTitle(title);
-      setStep(5);
+      setStep(6);
     } catch (error) {
       alert((error as Error).message);
     } finally {

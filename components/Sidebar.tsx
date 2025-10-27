@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { RefreshCw, CheckIcon } from './Icons';
 import Button from './common/Button';
@@ -9,12 +10,13 @@ interface SidebarProps {
 
 const steps = [
   { id: 1, name: 'Start', description: 'Tell me a bit about yourself!' },
-  { id: 2, name: 'Health Questionnaire', description: 'Complete a health questionnaire.' },
-  { id: 3, name: 'Hair & Scalp Analysis', description: 'Upload photos for AI analysis.' },
-  { id: 4, name: 'Your Goals', description: 'Select your desired outcomes.' },
-  { id: 5, name: 'Your Plan', description: 'Receive your personalized routine.' },
-  { id: 6, name: "Doctor's Report", description: 'Review a summary of your results.' },
-  { id: 7, name: 'AI Assistant', description: 'Ask questions about your plan.' },
+  { id: 2, name: 'Gender', description: 'Select your gender to continue.' },
+  { id: 3, name: 'Health Questionnaire', description: 'Complete a health questionnaire.' },
+  { id: 4, name: 'Hair & Scalp Analysis', description: 'Upload photos for AI analysis.' },
+  { id: 5, name: 'Your Goals', description: 'Select your desired outcomes.' },
+  { id: 6, name: 'Your Plan', description: 'Receive your personalized routine.' },
+  { id: 7, name: "Doctor's Report", description: 'Review a summary of your results.' },
+  { id: 8, name: 'AI Assistant', description: 'Ask questions about your plan.' },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ currentStep, onReset }) => {
