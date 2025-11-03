@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { HairProfileData } from '../types';
 import { maleQuestions, femaleQuestions } from './questionnaireData';
@@ -45,7 +46,7 @@ const Step2HealthQuestionnaire: React.FC<Step2Props> = ({
 
   const handlePrevQuestion = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex((prev) => prev - 1);
+      setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       onBack();
     }
@@ -90,52 +91,73 @@ const Step2HealthQuestionnaire: React.FC<Step2Props> = ({
 
         <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6">{currentQuestion.question}</h2>
 
-        {currentQuestion.type === 'image-radio' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-            {currentQuestion.imageOptions.map((option) => {
+        {currentQuestion.type === 'rich-single' && (
+          <div className="space-y-3">
+            {currentQuestion.richOptions.map((option) => {
               const isSelected = formData[currentQuestion.key as keyof HairProfileData] === option.label;
-              const Icon = option.icon;
               return (
-                 <div
+                <button
                   key={option.label}
                   onClick={() => handleSingleChoiceAndProceed(currentQuestion.key, option.label)}
-                  className={`
-                    rounded-xl p-3 sm:p-4 cursor-pointer transition-all duration-200 group relative
-                    flex flex-row items-center justify-between
-                    lg:flex-col lg:justify-start lg:text-center
-                    ${isSelected
-                      ? 'bg-blue-50/60 border-2 border-blue-500 shadow-lg'
-                      : 'bg-slate-100/70 border border-slate-200 hover:border-slate-300 hover:bg-slate-200/60'
-                    }
-                  `}
+                   className={`w-full text-left p-3 sm:p-4 rounded-xl border transition-all flex items-center gap-4 ${
+                    isSelected
+                      ? 'border-blue-500 bg-blue-50 shadow-sm'
+                      : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                  }`}
                 >
-                  {/* Mobile: Radio + Label */}
-                  <div className="flex items-center gap-4 lg:hidden">
-                    <span className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all ${isSelected ? 'border-blue-500 bg-white' : 'border-slate-400 bg-white'}`}>
-                      {isSelected && <span className="w-2.5 h-2.5 bg-blue-500 rounded-full"></span>}
-                    </span>
-                    <span className="text-sm font-medium text-slate-700">{option.label}</span>
-                  </div>
-
-                  {/* Desktop: Radio (positioned absolutely) */}
-                  <div className="hidden lg:block absolute top-3 left-3">
-                    <span className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all ${isSelected ? 'border-blue-500 bg-white' : 'border-slate-400 bg-white'}`}>
-                      {isSelected && <span className="w-2.5 h-2.5 bg-blue-500 rounded-full"></span>}
-                    </span>
-                  </div>
-                  
-                  {/* Icon (responsive size) */}
-                  <div className="flex items-center justify-center h-12 w-16 sm:w-20 lg:h-24 lg:w-full lg:mb-2">
-                    <Icon className="w-full h-full object-contain text-slate-800" />
-                  </div>
-
-                  {/* Desktop: Label */}
-                  <span className="hidden lg:block text-sm font-medium text-slate-700">{option.label}</span>
-                </div>
+                  <span className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all ${isSelected ? 'border-blue-600' : 'border-slate-400'}`}>
+                    {isSelected && <span className="w-2.5 h-2.5 bg-blue-600 rounded-full"></span>}
+                  </span>
+                  <img src={option.image} alt={option.label} className="w-12 h-12 rounded-full object-cover bg-white p-1 border border-slate-200" />
+                  <span className={`font-medium ${isSelected ? 'text-slate-800' : 'text-slate-700'}`}>{option.label}</span>
+                </button>
               );
             })}
           </div>
         )}
+
+        {currentQuestion.type === 'image-radio' && (
+          <div className="space-y-3 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-4 md:space-y-0">
+            {currentQuestion.imageOptions.map((option) => {
+              const isSelected = formData[currentQuestion.key as keyof HairProfileData] === option.label;
+              return (
+                <button
+                  key={option.label}
+                  onClick={() => handleSingleChoiceAndProceed(currentQuestion.key, option.label)}
+                  className={`
+                    w-full text-left p-3 rounded-xl border-2 transition-all duration-300
+                    flex items-center justify-between gap-4 
+                    md:flex-col md:justify-center md:items-center md:h-44 md:p-4 md:relative 
+                    ${isSelected ? 'border-blue-500 bg-blue-50 shadow-md scale-105' : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-md hover:-translate-y-1'}
+                  `}
+                >
+                  {/* Div for radio & label. Reordered on desktop. */}
+                  <div className="flex items-center gap-4 md:order-2 md:mt-2">
+                    {/* Radio button - absolute on desktop */}
+                    <span className={`
+                      w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all 
+                      md:absolute md:top-3 md:left-3 
+                      ${isSelected ? 'border-blue-600' : 'border-slate-400'}
+                    `}>
+                      {isSelected && <span className="w-2.5 h-2.5 bg-blue-600 rounded-full"></span>}
+                    </span>
+                    <span className={`font-semibold text-sm md:text-base ${isSelected ? 'text-slate-800' : 'text-slate-700'}`}>{option.label}</span>
+                  </div>
+                  
+                  <img 
+                    src={option.image} 
+                    alt={option.label} 
+                    className="
+                      h-12 object-contain flex-shrink-0 
+                      md:h-20 md:order-1 md:flex-shrink-0
+                    " 
+                  />
+                </button>
+              );
+            })}
+          </div>
+        )}
+
 
         {currentQuestion.type === 'single' && (
           <div className="space-y-3">

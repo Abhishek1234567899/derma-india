@@ -1,12 +1,13 @@
 import React from 'react';
-import {
-    MaleHairLoss1, MaleHairLoss2, MaleHairLoss3, MaleHairLoss4,
-    MaleHairLoss5, MaleHairLoss6, MaleHairLossCoinPatch, MaleHairLossHeavyFall
-} from './Icons';
 
 interface ImageRadioOption {
   label: string;
-  icon: React.FC<React.SVGProps<SVGSVGElement>>;
+  image: string;
+}
+
+interface RichOption {
+  label: string;
+  image: string;
 }
 
 export type Question = {
@@ -17,11 +18,19 @@ export type Question = {
       type: 'single' | 'multiple';
       options: string[];
       imageOptions?: never;
+      richOptions?: never;
     }
   | {
       type: 'image-radio';
       options?: never;
       imageOptions: ImageRadioOption[];
+      richOptions?: never;
+    }
+  | {
+      type: 'rich-single';
+      options?: never;
+      imageOptions?: never;
+      richOptions: RichOption[];
     }
 );
 
@@ -38,14 +47,14 @@ export const maleQuestions: Question[] = [
         key: 'hairlossImageMale',
         type: 'image-radio',
         imageOptions: [
-            { label: "Stage - 1", icon: MaleHairLoss1 },
-            { label: "Stage - 2", icon: MaleHairLoss2 },
-            { label: "Stage - 3", icon: MaleHairLoss3 },
-            { label: "Stage - 4", icon: MaleHairLoss4 },
-            { label: "Stage - 5", icon: MaleHairLoss5 },
-            { label: "Stage - 6", icon: MaleHairLoss6 },
-            { label: "Coin Size Patch", icon: MaleHairLossCoinPatch },
-            { label: "Heavy Hair Fall", icon: MaleHairLossHeavyFall },
+            { label: "Stage - 1", image: "/stage-1.png" },
+            { label: "Stage - 2", image: "/stage-2.png" },
+            { label: "Stage - 3", image: "/stage-3.png" },
+            { label: "Stage - 4", image: "/stage-4.png" },
+            { label: "Stage - 5", image: "/stage-5.png" },
+            { label: "Stage - 6", image: "/stage-6.png" },
+            { label: "Coin Size Patch", image: "/coin-patch.png" },
+            { label: "Heavy Hair Fall", image: "/heavy-fall.png" },
         ],
     },
     {
@@ -102,8 +111,12 @@ export const femaleQuestions: Question[] = [
     {
         question: "How much hairfall do you experience while oiling, combing or washing your hair?",
         key: 'hairfallAmountFemale',
-        type: 'single',
-        options: ["Normal hairfall (~20 strands)", "I notice a bigger clump than normal (~40-50 strands)", "I get very big clumps of hair, more than 100 hair strands"],
+        type: 'rich-single',
+        richOptions: [
+            { label: "Normal hairfall ~20 strands", image: "/hairfall-amount-1.png" },
+            { label: "I notice a bigger clump than normal ~40-50 strands", image: "/hairfall-amount-2.png" },
+            { label: "I get very big clumps of hair, more than 100 hair strands", image: "/hairfall-amount-3.png" },
+        ],
     },
     {
         question: "How long have you been experiencing increased hairfall?",
