@@ -3,11 +3,13 @@ import { GoogleGenAI, GenerateContentResponse, Type, GenerateContentParameters }
 import { HairProfileData, SkinConditionCategory, SkincareRoutine } from '../types';
 import { DERMATICS_INDIA_PRODUCTS } from "../productData";
 
-if (!process.env.API_KEY) {
+const rawApiKeys = (import.meta.env?.VITE_API_KEY as string | undefined) ?? process.env?.API_KEY;
+
+if (!rawApiKeys) {
     throw new Error("API_KEY environment variable is not set.");
 }
 
-const apiKeys = process.env.API_KEY.split(',')
+const apiKeys = rawApiKeys.split(',')
     .map(key => key.trim())
     .filter(key => key);
 

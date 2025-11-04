@@ -14,7 +14,7 @@ export const ZapIcon = createIcon(<polygon points="13 2 3 14 12 14 11 22 21 10 1
 export const HydrationIcon = createIcon(<><path d="M12 22a7 7 0 0 0 7-7c0-3.9-3.1-7-7-7s-7 3.1-7 7a7 7 0 0 0 7 7z" /><path d="M12 12v6" /><path d="M14 14h-4" /></>);
 export const WindIcon = createIcon(<><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2" /><path d="M9.6 4.6A2 2 0 1 1 11 8H2" /><path d="M12.6 19.4A2 2 0 1 0 14 16H2" /></>);
 export const RednessIcon = createIcon(<><circle cx="12" cy="12" r="10" /><path d="m15.5 15.5-2.5-2.5-2.5 2.5" /><path d="m8.5 8.5 2.5 2.5 2.5-2.5" /><path d="m15.5 8.5-5 5" /><path d="m8.5 15.5 5-5" /></>);
-export const ShieldCheckIcon = createIcon(<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" />);
+export const ShieldCheckIcon = createIcon(<><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></>);
 export const FolderIcon = createIcon(<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L8.6 3.3A2 2 0 0 0 6.9 2H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2Z" />);
 export const HeartIcon = createIcon(<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />);
 export const SunIcon = createIcon(<><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></>);

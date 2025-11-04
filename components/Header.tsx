@@ -18,7 +18,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onCartClick, cartItemCount
       </div>
       <div className="flex-1 flex justify-center">
          <a href="https://dermatics.in" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
-           <img src="https://dermatics.in/cdn/shop/files/Dermatics_Logo_-_Copy_1.png?v=1614318698" alt="Dermatics India Logo" className="h-8 w-auto" />
+           <img src="/logo.png" alt="Dermatics India Logo" className="h-10 w-auto" />
         </a>
       </div>
       <div className="flex-1 flex justify-end">

@@ -46,7 +46,7 @@ const Step2HealthQuestionnaire: React.FC<Step2Props> = ({
 
   const handlePrevQuestion = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex((prev) => prev + 1);
+      setCurrentQuestionIndex((prev) => prev - 1);
     } else {
       onBack();
     }
@@ -184,12 +184,26 @@ const Step2HealthQuestionnaire: React.FC<Step2Props> = ({
             {currentQuestion.options.map((option) => {
               const currentSelection = (formData[currentQuestion.key as keyof HairProfileData] as string[]) || [];
               const isSelected = currentSelection.includes(option);
+              
               const handleOptionClick = () => {
-                const newSelection = isSelected
-                  ? currentSelection.filter((item) => item !== option)
-                  : [...currentSelection, option];
-                handleChange(currentQuestion.key, newSelection);
+                const exclusiveOptions = ["None of the above", "None"];
+                const isExclusive = exclusiveOptions.includes(option);
+                
+                if (isExclusive) {
+                    const newSelection = isSelected ? [] : [option];
+                    handleChange(currentQuestion.key, newSelection);
+                } else {
+                    let newSelection;
+                    if (isSelected) {
+                        newSelection = currentSelection.filter((item) => item !== option);
+                    } else {
+                        const nonExclusiveSelections = currentSelection.filter(item => !exclusiveOptions.includes(item));
+                        newSelection = [...nonExclusiveSelections, option];
+                    }
+                    handleChange(currentQuestion.key, newSelection);
+                }
               };
+
               return (
                 <button
                   key={option}

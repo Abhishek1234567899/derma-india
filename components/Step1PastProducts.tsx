@@ -64,7 +64,7 @@ const Step1PastProducts: React.FC<Step1PastProductsProps> = ({ isOpen, onClose, 
 
 
                 return (
-                  <li key={step.name} className="pb-10 last:pb-0 relative">
+                  <li key={step.name} className="pb-4 last:pb-0 relative">
                     <div className="flex items-start">
                       <div className="flex flex-col items-center mr-4">
                         <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors duration-300 ${circleClass}`}>
@@ -102,7 +102,7 @@ const Step1PastProducts: React.FC<Step1PastProductsProps> = ({ isOpen, onClose, 
             </ol>
           </div>
            <footer className="p-4 border-t border-slate-200 bg-white">
-                <Button onClick={onReset} variant="primary" size="md" className="w-full gap-2">
+                <Button onClick={onReset} variant="primary" size="sm" className="w-full gap-2">
                     <RefreshCw className="w-4 h-4" />
                     Start Over
                 </Button>

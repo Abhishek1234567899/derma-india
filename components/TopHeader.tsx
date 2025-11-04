@@ -13,7 +13,7 @@ const TopHeader: React.FC<TopHeaderProps> = ({ onCartClick, cartItemCount, class
       <div className="grid grid-cols-3 items-center">
           <div className="w-[200px] justify-self-start">
              <a href="https://dermatics.in" target="_blank" rel="noopener noreferrer">
-               <img src="https://dermatics.in/cdn/shop/files/Dermatics_Logo_-_Copy_1.png?v=1614318698" alt="Dermatics India Logo" className="h-10 w-auto" />
+               <img src="/logo.png" alt="Dermatics India Logo" className="h-10 w-auto" />
              </a>
           </div>
           <div className="text-center justify-self-center">

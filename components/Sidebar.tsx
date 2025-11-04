@@ -37,7 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStep, onReset }) => {
 
 
             return (
-              <li key={step.name} className="pb-10 last:pb-0 relative">
+              <li key={step.name} className="pb-4 last:pb-0 relative">
                 <div className="flex items-start">
                   <div className="flex flex-col items-center mr-4">
                     <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors duration-300 ${circleClass}`}>
@@ -74,8 +74,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStep, onReset }) => {
           })}
         </ol>
       </div>
-      <div className="mt-auto">
-        <Button onClick={onReset} variant="primary" size="md" className="w-full gap-2 bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
+      <div className="mt-auto pt-6">
+        <Button onClick={onReset} variant="primary" size="sm" className="w-full gap-2 bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
             <RefreshCw className="w-4 h-4" />
             Start Over
         </Button>

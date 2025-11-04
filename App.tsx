@@ -215,9 +215,9 @@ const App: React.FC = () => {
         <TopHeader
             cartItemCount={totalCartItems}
             onCartClick={() => setIsCartOpen(true)}
-            className="hidden lg:flex mx-auto mt-8"
+            className="hidden lg:flex mx-auto mt-4"
         />
-      <div className="w-full max-w-screen-2xl mx-auto flex-grow grid grid-cols-1 lg:grid-cols-[300px_1fr] lg:gap-8 lg:mt-8">
+      <div className="w-full max-w-screen-2xl mx-auto flex-grow grid grid-cols-1 lg:grid-cols-[300px_1fr] lg:gap-8 lg:mt-4">
         <div className="hidden lg:block">
             <Sidebar
                 currentStep={step}
