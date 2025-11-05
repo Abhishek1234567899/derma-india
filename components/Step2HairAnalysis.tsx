@@ -244,6 +244,13 @@ const Step3HairAnalysis: React.FC<Step3HairAnalysisProps> = ({
                             <Plus className="w-6 h-6"/>
                             <input id="face-image-upload-2" type="file" accept="image/*" multiple onChange={handleFileChange} className="sr-only" />
                           </label>
+                          <button
+                              onClick={() => setIsCameraOpen(true)}
+                              className="flex items-center justify-center w-16 h-16 bg-slate-100 rounded-lg border-2 border-dashed border-slate-300 text-slate-500 hover:bg-slate-200 hover:border-blue-400 transition-colors cursor-pointer"
+                              title="Use camera"
+                          >
+                              <CameraIcon className="w-6 h-6" />
+                          </button>
                       </div>
                   )}
                 </div>
@@ -351,6 +358,13 @@ const Step3HairAnalysis: React.FC<Step3HairAnalysisProps> = ({
                             <Plus className="w-6 h-6"/>
                             <input id="face-image-upload-more" type="file" accept="image/*" multiple onChange={handleFileChange} className="sr-only" />
                         </label>
+                        <button
+                            onClick={() => setIsCameraOpen(true)}
+                            className="flex items-center justify-center w-16 h-16 bg-slate-100 rounded-lg border-2 border-dashed border-slate-300 text-slate-500 hover:bg-slate-200 hover:border-blue-400 transition-colors cursor-pointer"
+                            title="Use camera"
+                        >
+                            <CameraIcon className="w-6 h-6" />
+                        </button>
                     </div>
                  </div>
                   <Button onClick={handleAnalyze} disabled={faceImages.length === 0 || isLoading} isLoading={isLoading} size="md" className="w-full max-w-sm">

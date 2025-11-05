@@ -13,6 +13,9 @@ interface ChatbotProps {
   setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 }
 
+const rawApiKeys = (import.meta.env?.VITE_API_KEY as string | undefined) ?? process.env?.API_KEY;
+const chatApiKeys = rawApiKeys ? rawApiKeys.split(',').map(k => k.trim()).filter(Boolean) : [];
+
 const Chatbot: React.FC<ChatbotProps> = ({ analysisResult, haircareGoals, recommendation, chatHistory, setChatHistory }) => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -65,13 +68,12 @@ const Chatbot: React.FC<ChatbotProps> = ({ analysisResult, haircareGoals, recomm
   }, [analysisResult, haircareGoals, recommendation]);
 
   const initializeAndSendMessage = async (message: string): Promise<void> => {
-    const apiKeys = (process.env.API_KEY || '').split(',').map(k => k.trim()).filter(Boolean);
-    if (apiKeys.length === 0) throw new Error("API keys not configured.");
+    if (chatApiKeys.length === 0) throw new Error("API keys not configured.");
 
     const systemInstruction = getSystemInstruction();
     let lastError: Error | null = null;
     
-    for (const apiKey of apiKeys) {
+    for (const apiKey of chatApiKeys) {
         try {
             const ai = new GoogleGenAI({ apiKey });
             const chat = ai.chats.create({
