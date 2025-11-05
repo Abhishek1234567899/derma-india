@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { HairProfileData } from '../types';
 import Button from './common/Button';
@@ -22,7 +21,7 @@ const Step2UserInfo: React.FC<Step2GenderProps> = ({ onNext, onBack, setHairProf
   };
 
   return (
-    <div className="animate-fade-in-up flex flex-col w-full h-full bg-white rounded-2xl border-2 border-slate-300">
+    <div className="animate-fade-in-up flex flex-col w-full lg:h-full bg-white rounded-2xl border-2 border-slate-300">
       <div className="flex-grow flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-xl mx-auto">
           <div className="text-center mb-8">

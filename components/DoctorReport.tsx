@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { SkincareRoutine, FaceImage, SkinConditionCategory } from '../types';
 import Button from './common/Button';
@@ -99,7 +98,7 @@ const DoctorReport: React.FC<DoctorReportProps> = ({
 
 
   return (
-    <div className="animate-fade-in-up flex flex-col w-full h-full bg-white rounded-2xl border-2 border-slate-300">
+    <div className="animate-fade-in-up flex flex-col w-full lg:h-full bg-white rounded-2xl border-2 border-slate-300">
       <div className="flex-grow overflow-y-auto p-6 sm:p-8 lg:p-10">
           <div className="flex items-center justify-between mb-4">
           <div>

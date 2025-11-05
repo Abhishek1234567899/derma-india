@@ -29,7 +29,7 @@ const Step1Start: React.FC<Step1StartProps> = ({ onNext, setHairProfileData, hai
   };
 
   return (
-    <div className="animate-fade-in-up flex flex-col w-full h-full bg-white rounded-2xl border-2 border-slate-300">
+    <div className="animate-fade-in-up flex flex-col w-full lg:h-full bg-white rounded-2xl border-2 border-slate-300">
       <div className="flex-grow overflow-y-auto p-6 sm:p-8 lg:p-10">
         <div>
           <h2 className="text-3xl font-bold text-slate-900">Let's Begin!</h2>
