@@ -3,7 +3,6 @@ import { HairProfileData } from '../types';
 import Input from './common/Input';
 import Button from './common/Button';
 import { ArrowRightIcon } from './Icons';
-import Select from './common/Select';
 
 interface Step1StartProps {
   onNext: () => void;
@@ -11,22 +10,82 @@ interface Step1StartProps {
   hairProfileData: Partial<HairProfileData>;
 }
 
-const ageRanges = ["12 - 17 old", "18 - 24 old", "25 - 34 old", "35 - 54 old", "55 - 64 old", "65 - Older"];
-
 const Step1Start: React.FC<Step1StartProps> = ({ onNext, setHairProfileData, hairProfileData }) => {
-  const [name, setName] = useState(hairProfileData.name || '');
-  const [email, setEmail] = useState(hairProfileData.email || '');
-  const [phone, setPhone] = useState(hairProfileData.phone || '');
-  const [age, setAge] = useState(hairProfileData.age || '');
+  const [formData, setFormData] = useState({
+    name: hairProfileData.name || '',
+    email: hairProfileData.email || '',
+    phone: hairProfileData.phone || '',
+    age: hairProfileData.age || '',
+  });
 
-  const isFormValid = name.trim() !== '' && email.trim() !== '' && age !== '';
+  const [errors, setErrors] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    age: '',
+  });
+
+  const validateField = (id: string, value: string): string => {
+    switch (id) {
+      case 'name':
+        if (!value.trim()) return 'Name is required.';
+        if (/\d/.test(value)) return 'Name should not contain numbers.';
+        return '';
+      case 'email':
+        if (!value.trim()) return 'Email is required.';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Please enter a valid email address.';
+        return '';
+      case 'phone':
+        if (value.trim() && !/^\d{10}$/.test(value)) return 'Please enter a valid 10-digit phone number.';
+        return '';
+      case 'age': {
+        if (!value.trim()) return 'Age is required.';
+        const ageNum = Number(value);
+        if (isNaN(ageNum) || !Number.isInteger(ageNum)) return 'Please enter a valid age.';
+        if (ageNum < 10 || ageNum > 100) return 'Please enter an age between 10 and 100.';
+        return '';
+      }
+      default:
+        return '';
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    const error = validateField(id, value);
+    setErrors(prev => ({ ...prev, [id]: error }));
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+    if (errors[id as keyof typeof errors]) {
+      setErrors(prev => ({ ...prev, [id]: '' }));
+    }
+  };
 
   const handleNext = () => {
-    if (isFormValid) {
-      setHairProfileData(prev => ({ ...prev, name, email, phone, age }));
+    const nameError = validateField('name', formData.name);
+    const emailError = validateField('email', formData.email);
+    const phoneError = validateField('phone', formData.phone);
+    const ageError = validateField('age', formData.age);
+
+    const newErrors = {
+      name: nameError,
+      email: emailError,
+      phone: phoneError,
+      age: ageError,
+    };
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).every(e => e === '')) {
+      setHairProfileData(prev => ({ ...prev, ...formData }));
       onNext();
     }
   };
+
+  const isNextButtonDisabled = !formData.name || !formData.email || !formData.age;
 
   return (
     <div className="animate-fade-in-up flex flex-col w-full lg:h-full bg-white rounded-2xl border-2 border-slate-300">
@@ -36,52 +95,69 @@ const Step1Start: React.FC<Step1StartProps> = ({ onNext, setHairProfileData, hai
           <p className="text-base text-slate-600 mt-1">Let's start with a little about you!</p>
         </div>
 
-        <div className="mt-8 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Input
-              id="name"
-              label="What's your name?*"
-              placeholder="Your Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              autoComplete="name"
-            />
-            <Select
-              id="age"
-              label="How old are you?*"
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-              required
-            >
-              <option value="" disabled>Select an age range</option>
-              {ageRanges.map((ageRange) => (
-                <option key={ageRange} value={ageRange}>
-                  {ageRange}
-                </option>
-              ))}
-            </Select>
+        <div className="mt-8 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <div>
+              <Input
+                id="name"
+                label="What's your name?*"
+                placeholder="e.g. Rohan Sharma"
+                value={formData.name}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                required
+                autoComplete="name"
+                className={errors.name ? 'border-red-500 focus:border-red-500 focus:ring-red-500/50' : ''}
+              />
+              {errors.name && <p className="text-red-600 text-xs mt-1.5">{errors.name}</p>}
+            </div>
+            <div>
+              <Input
+                id="age"
+                label="How old are you?*"
+                type="number"
+                placeholder="e.g. 28"
+                value={formData.age}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                required
+                min="10"
+                max="100"
+                className={errors.age ? 'border-red-500 focus:border-red-500 focus:ring-red-500/50' : ''}
+              />
+              {errors.age && <p className="text-red-600 text-xs mt-1.5">{errors.age}</p>}
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Input
-              id="email"
-              label="Email*"
-              type="email"
-              placeholder="Your Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-            />
-            <Input
-              id="phone"
-              label="Phone"
-              type="tel"
-              placeholder="Mobile Number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              autoComplete="tel"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <div>
+              <Input
+                id="email"
+                label="Email*"
+                type="email"
+                placeholder="e.g. rohan.sharma@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                required
+                autoComplete="email"
+                className={errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/50' : ''}
+              />
+              {errors.email && <p className="text-red-600 text-xs mt-1.5">{errors.email}</p>}
+            </div>
+            <div>
+              <Input
+                id="phone"
+                label="Phone (Optional)"
+                type="tel"
+                placeholder="e.g. 9876543210"
+                value={formData.phone}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                autoComplete="tel"
+                className={errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-red-500/50' : ''}
+              />
+              {errors.phone && <p className="text-red-600 text-xs mt-1.5">{errors.phone}</p>}
+            </div>
           </div>
         </div>
       </div>
@@ -91,7 +167,7 @@ const Step1Start: React.FC<Step1StartProps> = ({ onNext, setHairProfileData, hai
         </Button>
         <Button
           onClick={handleNext}
-          disabled={!isFormValid}
+          disabled={isNextButtonDisabled}
           size="md"
           className="gap-2 bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
         >
