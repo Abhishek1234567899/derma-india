@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { HairProfileData } from '../types';
 import Input from './common/Input';
@@ -36,7 +37,8 @@ const Step1Start: React.FC<Step1StartProps> = ({ onNext, setHairProfileData, hai
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Please enter a valid email address.';
         return '';
       case 'phone':
-        if (value.trim() && !/^\d{10}$/.test(value)) return 'Please enter a valid 10-digit phone number.';
+        if (!value.trim()) return 'Phone number is required.';
+        if (!/^\d{10}$/.test(value)) return 'Please enter a valid 10-digit phone number.';
         return '';
       case 'age': {
         if (!value.trim()) return 'Age is required.';
@@ -85,7 +87,7 @@ const Step1Start: React.FC<Step1StartProps> = ({ onNext, setHairProfileData, hai
     }
   };
 
-  const isNextButtonDisabled = !formData.name || !formData.email || !formData.age;
+  const isNextButtonDisabled = !formData.name || !formData.email || !formData.age || !formData.phone;
 
   return (
     <div className="animate-fade-in-up flex flex-col w-full lg:h-full bg-white rounded-2xl border-2 border-slate-300">
@@ -147,7 +149,7 @@ const Step1Start: React.FC<Step1StartProps> = ({ onNext, setHairProfileData, hai
             <div>
               <Input
                 id="phone"
-                label="Phone (Optional)"
+                label="Phone*"
                 type="tel"
                 placeholder="e.g. 9876543210"
                 value={formData.phone}
