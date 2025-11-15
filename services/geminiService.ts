@@ -3,10 +3,15 @@ import { GoogleGenAI, GenerateContentResponse, Type, GenerateContentParameters }
 import { HairProfileData, SkinConditionCategory, SkincareRoutine } from '../types';
 import { DERMATICS_INDIA_PRODUCTS } from "../productData";
 
-const rawApiKeys = (import.meta.env?.VITE_API_KEY as string | undefined) ?? process.env?.API_KEY;
+const importMetaEnv = typeof import.meta !== 'undefined' ? (import.meta.env as Record<string, string | undefined>) : undefined;
+const processEnv = typeof process !== 'undefined' ? process.env : undefined;
+
+const rawApiKeys = (importMetaEnv?.VITE_API_KEY as string | undefined)
+    ?? processEnv?.API_KEY
+    ?? processEnv?.VITE_API_KEY;
 
 if (!rawApiKeys) {
-    throw new Error("API_KEY environment variable is not set.");
+    throw new Error("API key environment variable is not set. Define VITE_API_KEY or API_KEY.");
 }
 
 const apiKeys = rawApiKeys.split(',')
@@ -14,7 +19,7 @@ const apiKeys = rawApiKeys.split(',')
     .filter(key => key);
 
 if (apiKeys.length === 0) {
-    throw new Error("API_KEY environment variable is set, but contains no valid keys.");
+    throw new Error("API key environment variable is set, but contains no valid keys.");
 }
 
 const aiInstances = apiKeys.map(apiKey => new GoogleGenAI({ apiKey }));
@@ -229,31 +234,51 @@ export const generateRoutine = async (
     })), null, 2);
 
     const prompt = `
-        You are a world-class trichologist and haircare expert for the brand "Dermatics India". Your task is to create a highly personalized and effective haircare routine for a user based on their data. You MUST use products exclusively from the Dermatics India catalog provided below. Your goal is to create the *best* possible routine, recommending as many or as few steps as genuinely necessary for the user's specific conditions and goals.
+        **ROLE & GOAL:**
+        You are an expert dermatological AI for the brand "Dermatics India". Your mission is to create the single BEST, scientifically-backed, and hyper-personalized haircare routine for a user. Your recommendations must be effective, easy to follow, and safe. You MUST use products exclusively from the provided Dermatics India catalog.
+
+        **USER DATA (In Order of Priority):**
+        1.  **AI Hair & Scalp Analysis (PRIMARY DATA):** This is your most critical input. The conditions identified here are the primary problems you must solve.
+        2.  **User Hair Profile from Questionnaire (SECONDARY DATA):** Use this to understand the user's history, lifestyle, and concerns not visible in photos. If AI Analysis is not provided, this becomes your primary data source.
+        3.  **Primary Haircare Goals (DESIRED OUTCOME):** The user's stated goals. Your routine must directly address these goals, using the analysis and questionnaire to inform HOW you achieve them.
+        
+        **User's Information:**
+        - **AI Analysis:** ${analysisString || 'Not provided.'}
+        - **Questionnaire Profile:** ${JSON.stringify(hairProfile, null, 2)}
+        - **Goals:** ${goalsString}
 
         **Dermatics India Product Catalog:**
         ${productCatalogString}
 
-        **User Data:**
-        - **User Hair Profile (from questionnaire):** ${JSON.stringify(hairProfile, null, 2)}
-        - **AI Hair & Scalp Analysis Results:** ${analysisString || 'Not provided. Base your recommendations solely on the questionnaire.'}
-        - **Primary Haircare Goals:** ${goalsString}
+        **YOUR TASK (Follow these steps precisely):**
 
-        **Instructions:**
-        1.  **Analyze and Select:** Carefully review all available user data. If "AI Hair & Scalp Analysis Results" are provided, use them as a primary source for understanding the user's conditions. If analysis results are not provided, you MUST rely entirely on the "User Hair Profile (from questionnaire)" to infer the user's conditions and needs. From the "Dermatics India Product Catalog", select the MOST appropriate products to build a cohesive AM and PM routine. For hair, this might be simplified to "Wash Day" and "Non-Wash Day" or just a single routine. Use your expert judgment. Pay close attention to the 'suitableFor' and 'keyIngredients' tags in the product data to match products to the user's hair conditions.
-        2.  **Create the Routine:** Construct a step-by-step AM (morning) and PM (evening) routine. For each step, you must provide:
-            - \`stepType\`: A single, descriptive word for the routine step (e.g., "Shampoo", "Conditioner", "Serum", "Mask", "Leave-in").
-            - \`productId\`, \`variantId\`, \`productName\`, \`productUrl\`, \`productImageUrl\`, \`price\`, \`originalPrice\`: All taken directly from the catalog for the selected product.
-            - \`purpose\`: A brief, personalized explanation of WHY this specific product is chosen for the user, linking it to their analysis and profile.
-            - \`keyIngredients\`: An array of strings with the key ingredients for this product, taken directly from the catalog. This is **MANDATORY**.
-            - \`alternatives\`: An array of suitable alternative products from the catalog. Provide these where appropriate. Include all required fields for each alternative. If no good alternatives exist, this array can be empty.
-        3.  **Key Ingredients:** Based on the routine you created, identify an array of 4-5 key active ingredients from the selected products.
-        4.  **Lifestyle Tips:** Provide an array of general lifestyle and wellness tips that support the user's hair goals (e.g., diet tips, styling advice, stress management).
-        5.  **Disclaimer & Introduction:** Provide a standard disclaimer (mentioning consulting a dermatologist/trichologist) and a brief, encouraging introduction.
-        6.  **Routine Title:** Create a short, powerful title for the plan (e.g., "Hair Regrowth & Scalp Health Plan").
+        **STEP 1: Synthesize a Clinical Summary.**
+        Based on all user data, write a brief, internal summary of the user's condition.
+        *Example:* "User presents with moderate androgenetic alopecia on the crown (95% confidence) and reports high stress, which may exacerbate hair shedding. Goal is to reduce hair fall."
+
+        **STEP 2: Devise a Treatment Strategy.**
+        Based on your summary, outline a clear strategy.
+        *Example:* "Strategy: 1. Aggressively target follicular miniaturization using a topical solution with proven actives. 2. Support scalp health with a gentle, pH-balanced cleanser. 3. Reduce breakage reported in the questionnaire with a strengthening conditioner."
+
+        **STEP 3: Select Products Using an Ingredient-First Approach.**
+        For each part of your strategy, scan the catalog for the best product match.
+        - **Prioritize Active Ingredients:** Match products based on their effectiveness for the diagnosed conditions (e.g., for hair loss, look for Minoxidil, Finasteride, Procapil; for dandruff, look for Ketoconazole).
+        - **Use 'suitableFor' as a Filter:** Ensure the product's intended use matches the user's condition.
+        - **Build the Routine:** Construct a simple but powerful AM and PM routine (or a single "General" routine). Start with the 2-4 most critical products. Only add more if truly necessary.
         
-        **Output Format:**
-        Return a single JSON object. The root object must have a "title" key and a "recommendation" key. The "recommendation" object must contain "introduction", "am", "pm", "keyIngredients", "lifestyleTips", and "disclaimer". If you only create a general routine, put all steps in the "am" array and leave the "pm" array empty. DO NOT recommend any products not in the provided catalog.
+        **STEP 4: Generate the Final JSON Output.**
+        Provide your response in the specified JSON format. Your explanations must be exceptional.
+
+        - **\`purpose\` Field is CRITICAL:** For each product, write a highly personalized 'purpose'. Directly reference the user's data.
+            - **GOOD example:** "Because your analysis identified 'Androgenetic Alopecia' and you want to 'Promote Hair Growth', this solution containing 5% Minoxidil is the most effective choice to reactivate hair follicles."
+            - **BAD example:** "This product is for hair loss."
+        - **\`keyIngredients\` is MANDATORY:** Extract these directly from the catalog data for each product.
+        - **\`alternatives\`:** If available, provide 1-2 suitable alternatives from the catalog for the primary recommended product.
+        - **Lifestyle Tips:** Provide actionable, personalized tips that complement the routine.
+        - **Routine Title:** Create a powerful, goal-oriented title.
+
+        **OUTPUT FORMAT:**
+        Return a single JSON object. The root object must have "title" and "recommendation" keys. The "recommendation" object must contain "introduction", "am", "pm", "keyIngredients", "lifestyleTips", and "disclaimer". If a general routine is best, put all steps in the "am" array and leave "pm" empty. DO NOT recommend any products not in the provided catalog.
     `;
 
     const alternativeProductSchema = {
